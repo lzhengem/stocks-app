@@ -11,16 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170225000706) do
+ActiveRecord::Schema.define(version: 20170225004122) do
 
   create_table "stocks", force: :cascade do |t|
     t.text     "name"
     t.float    "price"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
-    t.integer  "rev_curr_year"
-    t.integer  "rev_last_year"
-    t.integer  "rev_last_2_year"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "rev_curr_year",   limit: 8
+    t.integer  "rev_last_year",   limit: 8
+    t.integer  "rev_last_2_year", limit: 8
   end
 
 end
