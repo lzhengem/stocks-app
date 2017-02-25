@@ -101,6 +101,37 @@ end
             roe_curr_year = roe_last_year = roe_last_2_year = 0
         end
         
+        #get analyst recomendations
+        rec_url = URI.parse(URI.escape("http://www.nasdaq.com/charts/#{ticker}_rm.jpeg"))
+        rec_req = Net::HTTP.new(rec_url.host, rec_url.port) #sometimes this chart is not avaiable, so check to see if its there
+        rec_res = rec_req.request_head(rec_url.path)
+        if rec_res.code == '200' #if it exists, then parse the image
+            image = Magick::ImageList.new  
+            urlimage = open(rec_url) # Image Remote URL 
+            image.from_blob(urlimage.read)
+            buy_x_coordinate = 206 #if the first blue line is at the x coordinate 206, then it is a "buy" recommendation
+            analyst_x_coordinate = 0 #find the analyst recomendation x coordinate of the bar
+            (0..image.columns).each do |x|
+                (0..image.rows).each do |y|
+                    pixel = image.pixel_color(x, y)
+                    if pixel.blue/256 > 220 and pixel.red/256 <100 and pixel.green/256 <100
+                        analyst_x_coordinate = x
+                        break 
+                    end
+                end
+                break if analyst_x_coordinate > 0
+            end
+            if analyst_x_coordinate == 0 #if the bar is not found, then give 'N/A'
+                analyst_rec = "N/A"
+            elsif analyst_x_coordinate > buy_x_coordinate #if the bar is in the 'Buy' zone, then Buy
+                analyst_rec = "Buy"
+            else
+                analyst_rec = "Sell" #if the bar is not in the 'Buy' zone, then sell
+            end
+        else
+            analyst_rec = "N/A" #if the chart isnot found, then 'N/A'
+        end
+        
         
         
         Stock.create(name: ticker.upcase, 
@@ -114,7 +145,8 @@ end
                             dividends: dividends,
                             roe_curr_year: roe_curr_year,
                             roe_last_year: roe_last_year,
-                            roe_last_2_year: roe_last_2_year
+                            roe_last_2_year: roe_last_2_year,
+                            analyst_rec: analyst_rec
                             )
     end
 end
