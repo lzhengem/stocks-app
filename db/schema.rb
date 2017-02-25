@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170225021102) do
+ActiveRecord::Schema.define(version: 20170225023454) do
 
   create_table "stocks", force: :cascade do |t|
     t.text     "name"
@@ -25,6 +25,9 @@ ActiveRecord::Schema.define(version: 20170225021102) do
     t.float    "eps_last_year"
     t.float    "eps_last_2_year"
     t.string   "dividends"
+    t.string   "roe_curr_year"
+    t.string   "roe_last_year"
+    t.string   "roe_last_2_year"
   end
 
 end
