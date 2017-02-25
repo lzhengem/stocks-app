@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170225014200) do
+ActiveRecord::Schema.define(version: 20170225015814) do
 
   create_table "stocks", force: :cascade do |t|
     t.text     "name"
@@ -21,9 +21,9 @@ ActiveRecord::Schema.define(version: 20170225014200) do
     t.integer  "rev_curr_year",   limit: 8
     t.integer  "rev_last_year",   limit: 8
     t.integer  "rev_last_2_year", limit: 8
-    t.decimal  "eps_curr_year"
-    t.decimal  "eps_last_year"
-    t.decimal  "eps_last_2_year"
+    t.float    "eps_curr_year"
+    t.float    "eps_last_year"
+    t.float    "eps_last_2_year"
   end
 
 end

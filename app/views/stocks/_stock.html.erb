@@ -1,9 +1,19 @@
 <tr>
     <td><%= stock.name %></td>
     <td><%= stock.price%></td>
+    <!--REV score-->
     <%if stock.rev_curr_year > stock.rev_last_year and stock.rev_last_year > stock.rev_last_2_year %>
         <td><b class="pass">Pass</b></td>
     <%elsif stock.rev_curr_year.zero? or stock.rev_last_year.zero? or stock.rev_last_2_year.zero? %>
+        <td>N/A</td>
+    <%else%>
+        <td><b class="fail">Fail</b></td>
+    <%end%>
+    
+    <!--EPS score-->
+    <%if stock.eps_curr_year > stock.eps_last_year and stock.eps_last_year > stock.eps_last_2_year %>
+        <td><b class="pass">Pass</b></td>
+    <%elsif stock.eps_curr_year.zero? or stock.eps_last_year.zero? or stock.eps_last_2_year.zero? %>
         <td>N/A</td>
     <%else%>
         <td><b class="fail">Fail</b></td>

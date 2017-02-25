@@ -64,6 +64,9 @@ end
             eps_last_year = rev_info[20].text.to_f
             eps_last_2_year = rev_info[21].text.to_f
             
+            #get dividends
+            dividends = rev_info[23].text
+            
             if rev_curr_year.zero? #if info for the latest month is missing, instead of using totals, use previous month
                 latest_month = rev_headers[-3].text
                 rev_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
@@ -76,9 +79,13 @@ end
                 eps_curr_year = rev_info[6].text.to_f
                 eps_last_year = rev_info[7].text.to_f
                 eps_last_2_year = rev_info[8].text.to_f
+                
+                #get dividends
+                dividends = rev_info[10].text
+                
             end
         else
-            rev_curr_year = rev_last_year = rev_last_2_year = eps_curr_year = eps_last_year = eps_last_2_year = 0
+            rev_curr_year = rev_last_year = rev_last_2_year = eps_curr_year = eps_last_year = eps_last_2_year = dividends = 0
             
         end
         
@@ -89,7 +96,8 @@ end
                             rev_last_2_year: rev_last_2_year,
                             eps_curr_year: eps_curr_year,
                             eps_last_year: eps_last_year,
-                            eps_last_2_year: eps_last_2_year
+                            eps_last_2_year: eps_last_2_year,
+                            dividends: dividends
                             )
     end
 end
