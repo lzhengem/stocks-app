@@ -25,7 +25,7 @@
     <!--ROE score-->
     <%if stock.roe_curr_year > stock.roe_last_year and stock.roe_last_year > stock.roe_last_2_year %>
         <td><b class="pass">Pass</b></td>
-    <%elsif stock.roe_curr_year.empty? or stock.roe_last_year.empty? or stock.roe_last_2_year.empty? %>
+    <%elsif stock.roe_curr_year.zero? or stock.roe_last_year.zero? or stock.roe_last_2_year.zero? %>
         <td>N/A</td>
     <%else%>
         <td><b class="fail">Fail</b></td>

@@ -94,9 +94,9 @@ end
         roe_url = "http://www.nasdaq.com/symbol/#{ticker}/financials?query=ratios"
         roe_doc = Nokogiri.HTML(open(URI.escape(roe_url)))
         if (roe_info = roe_doc.css("div#financials-iframe-wrap td")).any?
-            roe_curr_year = roe_info[-4].text #the roe for the current year is the 4th from last
-            roe_last_year = roe_info[-3].text
-            roe_last_2_year = roe_info[-2].text
+            roe_curr_year = roe_info[-4].text.to_f #the roe for the current year is the 4th from last
+            roe_last_year = roe_info[-3].text.to_f
+            roe_last_2_year = roe_info[-2].text.to_f
         else
             roe_curr_year = roe_last_year = roe_last_2_year = 0
         end
