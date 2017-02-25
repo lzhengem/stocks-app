@@ -11,16 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170225053736) do
+ActiveRecord::Schema.define(version: 20170225071358) do
 
   create_table "stocks", force: :cascade do |t|
     t.text     "name"
     t.float    "price"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-    t.integer  "rev_curr_year",   limit: 8
-    t.integer  "rev_last_year",   limit: 8
-    t.integer  "rev_last_2_year", limit: 8
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.integer  "rev_curr_year",            limit: 8
+    t.integer  "rev_last_year",            limit: 8
+    t.integer  "rev_last_2_year",          limit: 8
     t.float    "eps_curr_year"
     t.float    "eps_last_year"
     t.float    "eps_last_2_year"
@@ -29,6 +29,9 @@ ActiveRecord::Schema.define(version: 20170225053736) do
     t.float    "roe_last_year"
     t.float    "roe_last_2_year"
     t.string   "analyst_rec"
+    t.float    "surprises_curr_quarter"
+    t.float    "surprises_last_quarter"
+    t.float    "surprises_last_2_quarter"
   end
 
 end

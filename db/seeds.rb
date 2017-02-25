@@ -132,6 +132,17 @@ end
             analyst_rec = "N/A" #if the chart isnot found, then 'N/A'
         end
         
+        #get earning surprises
+        surprises_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-surprise"
+        surprises_doc = Nokogiri.HTML(open(URI.escape(surprises_url)))
+        if surprises_doc.css("div.genTable td").any?
+            surprises_chart = surprises_doc.css("div.genTable td")
+            surprises_curr_quarter = surprises_chart[-1].text.to_f
+            surprises_last_quarter = surprises_chart[-6].text.to_f
+            surprises_last_2_quarter = surprises_chart[-11].text.to_f
+        else
+            surprises_curr_quarter = surprises_last_quarter = surprises_last_2_quarter = 0
+        end
         
         
         Stock.create(name: ticker.upcase, 
@@ -146,7 +157,10 @@ end
                             roe_curr_year: roe_curr_year,
                             roe_last_year: roe_last_year,
                             roe_last_2_year: roe_last_2_year,
-                            analyst_rec: analyst_rec
+                            analyst_rec: analyst_rec,
+                            surprises_curr_quarter: surprises_curr_quarter,
+                            surprises_last_quarter: surprises_last_quarter,
+                            surprises_last_2_quarter: surprises_last_2_quarter
                             )
     end
 end
