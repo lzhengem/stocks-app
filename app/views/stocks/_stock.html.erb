@@ -30,4 +30,13 @@
     <%else%>
         <td><b class="fail">Fail</b></td>
     <%end%>
+    
+    <!--Analyst Rec-->
+    <%if stock.analyst_rec == "Buy" %>
+        <td><b class="pass">Pass</b></td>
+    <%elsif stock.analyst_rec == "Sell" %>
+        <td><b class="fail">Fail</b></td>
+    <%else%>
+        <td>N/A</td>
+    <%end%>
 </tr>
