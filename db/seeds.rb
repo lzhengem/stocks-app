@@ -85,9 +85,23 @@ end
                 
             end
         else
-            rev_curr_year = rev_last_year = rev_last_2_year = eps_curr_year = eps_last_year = eps_last_2_year = dividends = 0
+            rev_curr_year = rev_last_year = rev_last_2_year = eps_curr_year = eps_last_year = eps_last_2_year = 0
+            dividends = "N/A"
             
         end
+        
+        # get return on equity ROE
+        roe_url = "http://www.nasdaq.com/symbol/#{ticker}/financials?query=ratios"
+        roe_doc = Nokogiri.HTML(open(URI.escape(roe_url)))
+        if (roe_info = roe_doc.css("div#financials-iframe-wrap td")).any?
+            roe_curr_year = roe_info[-4].text #the roe for the current year is the 4th from last
+            roe_last_year = roe_info[-3].text
+            roe_last_2_year = roe_info[-2].text
+        else
+            roe_curr_year = roe_last_year = roe_last_2_year = 0
+        end
+        
+        
         
         Stock.create(name: ticker.upcase, 
                             price: price, 
@@ -97,7 +111,10 @@ end
                             eps_curr_year: eps_curr_year,
                             eps_last_year: eps_last_year,
                             eps_last_2_year: eps_last_2_year,
-                            dividends: dividends
+                            dividends: dividends,
+                            roe_curr_year: roe_curr_year,
+                            roe_last_year: roe_last_year,
+                            roe_last_2_year: roe_last_2_year
                             )
     end
 end
