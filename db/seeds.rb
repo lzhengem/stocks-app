@@ -152,8 +152,18 @@ end
         #get earnings growth
         earnings_growth_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-growth"
         earnings_growth_doc = Nokogiri.HTML(open(URI.escape(earnings_growth_url)))
-        earnings_growth = earnings_growth_doc.css("span#quotes_content_left_textinfo").text.scan(/\d+.\d+/).first.to_f #it is the first digit in the paragraph
+        earnings_growth_digit = earnings_growth_doc.css("span#quotes_content_left_textinfo").text.scan(/\d+/).first
+        earnings_growth_digit.nil? ? earnings_growth = nil : earnings_growth = earnings_growth_digit.to_f #it is the first digit in the paragraph
         
+        # short interest - only avaiable for nasdaq-listed companies, for other companies, check NYSE website
+        short_interest_url = "http://www.nasdaq.com/symbol/#{ticker}/short-interest"
+        short_interest_doc = Nokogiri.HTML(open(URI.escape(short_interest_url)))
+        if short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td").any?
+            short_interest_chart = short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td")
+            short_interest = short_interest_chart[3].text.to_f
+        else
+            short_interest = -1
+        end
         
         Stock.create(name: ticker.upcase, 
                             price: price, 
@@ -171,7 +181,8 @@ end
                             surprises_curr_quarter: surprises_curr_quarter,
                             surprises_last_quarter: surprises_last_quarter,
                             surprises_last_2_quarter: surprises_last_2_quarter,
-                            earnings_growth: earnings_growth
+                            earnings_growth: earnings_growth,
+                            short_interest: short_interest
                             )
     end
 end

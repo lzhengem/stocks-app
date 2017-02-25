@@ -1,6 +1,9 @@
 <tr>
     <td><%= stock.name %></td>
     <td><%= stock.price%></td>
+        <!--Dividends-->
+    <td><%=stock.dividends%></td>
+    
     <!--REV score-->
     <%if stock.rev_curr_year.zero? or stock.rev_last_year.zero? or stock.rev_last_2_year.zero? %>
         <td>N/A</td>
@@ -18,9 +21,7 @@
     <%else%>
         <td><b class="fail">Fail</b></td>
     <%end%>
-    
-    <!--Dividends-->
-    <td><%=stock.dividends%></td>
+
     
     <!--ROE score-->
     <%if stock.roe_curr_year.zero? or stock.roe_last_year.zero? or stock.roe_last_2_year.zero? %>
@@ -45,6 +46,25 @@
     <%if stock.surprises_curr_quarter.zero? or stock.surprises_last_quarter.zero? or stock.surprises_last_2_quarter.zero? %>
         <td>N/A</td>
     <%elsif stock.surprises_curr_quarter > 0 and stock.surprises_last_quarter > 0 and stock.surprises_last_2_quarter > 0 %>
+        <td><b class="pass">Pass</b></td>
+    <%else%>
+        <td><b class="fail">Fail</b></td>
+    <%end%>
+    
+    
+    <!--earnings growth-->
+    <%if stock.earnings_growth.nil?%>
+        <td>N/A</td>
+    <%elsif stock.earnings_growth > 0%>
+        <td><b class="pass">Pass</b></td>
+    <%else%>
+        <td><b class="fail">Fail</b></td>
+    <%end%>
+    
+    <!--Short interest-->
+    <%if stock.short_interest == -1 %>
+        <td>N/A</td>
+    <%elsif stock.short_interest <= 2 %>
         <td><b class="pass">Pass</b></td>
     <%else%>
         <td><b class="fail">Fail</b></td>
