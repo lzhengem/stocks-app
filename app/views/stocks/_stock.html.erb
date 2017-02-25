@@ -2,19 +2,19 @@
     <td><%= stock.name %></td>
     <td><%= stock.price%></td>
     <!--REV score-->
-    <%if stock.rev_curr_year > stock.rev_last_year and stock.rev_last_year > stock.rev_last_2_year %>
-        <td><b class="pass">Pass</b></td>
-    <%elsif stock.rev_curr_year.zero? or stock.rev_last_year.zero? or stock.rev_last_2_year.zero? %>
+    <%if stock.rev_curr_year.zero? or stock.rev_last_year.zero? or stock.rev_last_2_year.zero? %>
         <td>N/A</td>
+    <%elsif stock.rev_curr_year > stock.rev_last_year and stock.rev_last_year > stock.rev_last_2_year %>
+        <td><b class="pass">Pass</b></td>
     <%else%>
         <td><b class="fail">Fail</b></td>
     <%end%>
     
     <!--EPS score-->
-    <%if stock.eps_curr_year > stock.eps_last_year and stock.eps_last_year > stock.eps_last_2_year %>
-        <td><b class="pass">Pass</b></td>
-    <%elsif stock.eps_curr_year.zero? or stock.eps_last_year.zero? or stock.eps_last_2_year.zero? %>
+    <%if stock.eps_curr_year.zero? or stock.eps_last_year.zero? or stock.eps_last_2_year.zero? %>
         <td>N/A</td>
+    <%elsif stock.eps_curr_year > stock.eps_last_year and stock.eps_last_year > stock.eps_last_2_year %>
+        <td><b class="pass">Pass</b></td>
     <%else%>
         <td><b class="fail">Fail</b></td>
     <%end%>
@@ -23,10 +23,10 @@
     <td><%=stock.dividends%></td>
     
     <!--ROE score-->
-    <%if stock.roe_curr_year > stock.roe_last_year and stock.roe_last_year > stock.roe_last_2_year %>
-        <td><b class="pass">Pass</b></td>
-    <%elsif stock.roe_curr_year.zero? or stock.roe_last_year.zero? or stock.roe_last_2_year.zero? %>
+    <%if stock.roe_curr_year.zero? or stock.roe_last_year.zero? or stock.roe_last_2_year.zero? %>
         <td>N/A</td>
+    <%elsif stock.roe_curr_year > stock.roe_last_year and stock.roe_last_year > stock.roe_last_2_year %>
+        <td><b class="pass">Pass</b></td>
     <%else%>
         <td><b class="fail">Fail</b></td>
     <%end%>
@@ -38,5 +38,15 @@
         <td><b class="fail">Fail</b></td>
     <%else%>
         <td>N/A</td>
+    <%end%>
+    
+    
+    <!--Surprises-->
+    <%if stock.surprises_curr_quarter.zero? or stock.surprises_last_quarter.zero? or stock.surprises_last_2_quarter.zero? %>
+        <td>N/A</td>
+    <%elsif stock.surprises_curr_quarter > 0 and stock.surprises_last_quarter > 0 and stock.surprises_last_2_quarter > 0 %>
+        <td><b class="pass">Pass</b></td>
+    <%else%>
+        <td><b class="fail">Fail</b></td>
     <%end%>
 </tr>

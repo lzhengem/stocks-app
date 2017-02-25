@@ -135,7 +135,7 @@ end
         #get earning surprises
         surprises_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-surprise"
         surprises_doc = Nokogiri.HTML(open(URI.escape(surprises_url)))
-        if surprises_doc.css("div.genTable td").any?
+        if surprises_doc.css("div.genTable td").any? and surprises_doc.css("div.genTable td").count > 11
             surprises_chart = surprises_doc.css("div.genTable td")
             surprises_curr_quarter = surprises_chart[-1].text.to_f
             surprises_last_quarter = surprises_chart[-6].text.to_f
@@ -143,6 +143,16 @@ end
         else
             surprises_curr_quarter = surprises_last_quarter = surprises_last_2_quarter = 0
         end
+        
+        #get earnings forecast
+        # forecast_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-forecast"
+        # forecast_doc = Nokogiri.HTML(open(URI.escape(forecast_url)))
+        # forecast_chart = forecast_doc.css("div.genTable").first.css("td")
+        
+        #get earnings growth
+        earnings_growth_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-growth"
+        earnings_growth_doc = Nokogiri.HTML(open(URI.escape(earnings_growth_url)))
+        earnings_growth = earnings_growth_doc.css("span#quotes_content_left_textinfo").text.scan(/\d+.\d+/).first.to_f #it is the first digit in the paragraph
         
         
         Stock.create(name: ticker.upcase, 
@@ -160,7 +170,8 @@ end
                             analyst_rec: analyst_rec,
                             surprises_curr_quarter: surprises_curr_quarter,
                             surprises_last_quarter: surprises_last_quarter,
-                            surprises_last_2_quarter: surprises_last_2_quarter
+                            surprises_last_2_quarter: surprises_last_2_quarter,
+                            earnings_growth: earnings_growth
                             )
     end
 end
