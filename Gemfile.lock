@@ -113,6 +113,7 @@ GEM
     rake (11.3.0)
     rdoc (4.2.2)
       json (~> 1.4)
+    rmagick (2.16.0)
     rtesseract (2.1.0)
       nokogiri
     sass (3.4.22)
@@ -165,6 +166,7 @@ DEPENDENCIES
   json
   mini_magick
   rails (= 4.2.5)
+  rmagick (~> 2.15, >= 2.15.4)
   rtesseract
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)

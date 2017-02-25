@@ -6,6 +6,7 @@ gem 'rails', '4.2.5'
 gem 'bootstrap-sass', '3.3.6'
 gem 'will_paginate', '3.1.0' #for paginating the pages for viewing
 gem 'bootstrap-will_paginate', '0.0.10' #boostrap for paginating pages
+gem 'rmagick', '~> 2.15', '>= 2.15.4'
 gem 'mini_magick' #for getting info from pictures
 gem 'rtesseract' #for getting info from pictures
 
