@@ -1,7 +1,11 @@
 <tr>
     <td><%= stock.name %></td>
     <td><%= stock.price%></td>
-    <td><%= stock.rev_curr_year%></td>
-    <td><%= stock.rev_last_year%></td>
-    <td><%= stock.rev_last_2_year%></td>
+    <%if stock.rev_curr_year > stock.rev_last_year and stock.rev_last_year > stock.rev_last_2_year %>
+        <td>Pass</td>
+    <%elsif stock.rev_curr_year.zero? or stock.rev_last_year.zero? or stock.rev_last_2_year.zero? %>
+        <td>N/A</td>
+    <%else%>
+        <td>Fail</td>
+    <%end%>
 </tr>
