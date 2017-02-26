@@ -199,6 +199,23 @@ end
         # forecast_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-forecast"
         # forecast_doc = Nokogiri.HTML(open(URI.escape(forecast_url)))
         # forecast_chart = forecast_doc.css("div.genTable").first.css("td")
+        forecast_doc = get_doc_from "http://www.nasdaq.com/symbol/#{ticker}/earnings-forecast"
+        chart = forecast_doc.css("div.genTable").first
+        forecast_array =[]
+        if chart.css("td") #the information is stored here in the intervals 1,8,15... (x7 + 1)
+            num_forecast = (chart.css("td").count / 7) - 1 #find out how many forecasts we have. minus 1 because of 0 indexing
+            0.upto(num_forecast) do |num| #collect all the forecasts into forecast_array
+                forecast_array[num] = chart.css("td")[7 * num + 1].text.to_f
+            end
+        end
+        
+        if forecast_array.empty?
+            forecast_score = "N/A"
+        elsif ascending? forecast_array
+            forecast_score = "Pass"
+        else
+            forecast_score = "Fail"
+        end
         
         #get earnings growth
         earnings_growth_doc = get_doc_from("http://www.nasdaq.com/symbol/#{ticker}/earnings-growth")
@@ -282,6 +299,11 @@ end
                             short_interest_score: short_interest_score,
                             insider_trading: insider_trading,
                             insider_trading_score: insider_trading_score,
+                            forecast_year_0: forecast_array[0],
+                            forecast_year_1: forecast_array[1],
+                            forecast_year_2: forecast_array[2],
+                            forecast_year_3: forecast_array[3],
+                            forecast_score: forecast_score,
                             pass_count: pass_count,
                             fail_count: fail_count
                             )
