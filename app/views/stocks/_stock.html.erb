@@ -24,4 +24,5 @@
     <td class="<%= stock.short_interest_score.nil? ? 'N/A' : stock.short_interest_score.downcase %>"><%= stock.short_interest_score %></td> 
     <!--Insider Trading-->
     <td class="<%= stock.insider_trading_score.nil? ? 'N/A' : stock.insider_trading_score.downcase %>"><%= stock.insider_trading_score %></td> 
+    <td><%= stock.pass_count %></td> 
 </tr>

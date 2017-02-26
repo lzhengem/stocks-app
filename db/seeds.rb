@@ -27,8 +27,8 @@ end
 
 # @tickers = {}
 # pages are separated by the letters
-('A'..'B').each do |letter|
-# ('A'..'Z').each do |letter|
+# ('A'..'B').each do |letter|
+('A'..'Z').each do |letter|
     url = "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}"
     html = open(url)
     doc = Nokogiri::HTML(html)
@@ -257,7 +257,7 @@ end
             pass_count += 1
         else
             insider_trading_score = "Fail"
-            pass_count +=1
+            fail_count +=1
         end
             
         
