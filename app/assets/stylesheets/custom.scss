@@ -19,6 +19,15 @@
 }
 
 /* universal */
+
+// alternate table row colors
+td :nth-child(even){
+  background-color: #dcdcdc;
+}
+td :nth-child(odd){
+  background-color: #aaaaaa;
+}
+
 td {
   padding-left: 10px;
   
