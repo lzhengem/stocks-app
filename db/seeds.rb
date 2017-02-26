@@ -5,6 +5,8 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+include ApplicationHelper
+
 require 'open-uri'
 require 'nokogiri'
 
@@ -27,11 +29,9 @@ end
 
 # @tickers = {}
 # pages are separated by the letters
-# ('A'..'B').each do |letter|
-('A'..'Z').each do |letter|
-    url = "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}"
-    html = open(url)
-    doc = Nokogiri::HTML(html)
+('A'..'B').each do |letter|
+# ('A'..'Z').each do |letter|
+    doc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}"
 
     doc.css('h3').map do |link|
         ticker = link.content.strip.downcase
@@ -39,16 +39,15 @@ end
         fail_count = 0
         
         #get price info
-        ticker_doc = Nokogiri.HTML(open(URI.escape("http://www.nasdaq.com/symbol/#{ticker}")))
+        ticker_doc = get_doc_from "http://www.nasdaq.com/symbol/#{ticker}"
         price = ticker_doc.css("div#qwidget_lastsale.qwidget-dollar").text.tr('$','').to_f
         
         #get revenue information
-        rev_url = "http://www.nasdaq.com/symbol/#{ticker}/revenue-eps"
-        rev_doc = Nokogiri.HTML(open(URI.escape(rev_url)))
+        rev_doc = get_doc_from("http://www.nasdaq.com/symbol/#{ticker}/revenue-eps")
         rev_chart_url = rev_doc.css('iframe#frmMain').first['src'] #gets the page where the chart resides
-        rev_chart_doc = Nokogiri.HTML(open(URI.escape(rev_chart_url)))
-        rev_chart = rev_chart_doc.children.css("td.body1")
-        rev_headers = rev_chart_doc.children.css("td.body1 b")
+        rev_chart_doc = get_doc_from(rev_chart_url)
+        rev_chart = rev_chart_doc.css("td.body1")
+        rev_headers = rev_chart_doc.css("td.body1 b")
         if rev_headers[-2] #if the chart is avaiable for this symbol get rev info
             latest_month = rev_headers[-2].text
             start = 0
@@ -112,8 +111,7 @@ end
         end
         
         # get return on equity ROE
-        roe_url = "http://www.nasdaq.com/symbol/#{ticker}/financials?query=ratios"
-        roe_doc = Nokogiri.HTML(open(URI.escape(roe_url)))
+        roe_doc = get_doc_from("http://www.nasdaq.com/symbol/#{ticker}/financials?query=ratios")
         if (roe_info = roe_doc.css("div#financials-iframe-wrap td")).any?
             roe_curr_year = roe_info[-4].text.to_f #the roe for the current year is the 4th from last
             roe_last_year = roe_info[-3].text.to_f
@@ -176,8 +174,7 @@ end
                 
         
         #get earning surprises
-        surprises_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-surprise"
-        surprises_doc = Nokogiri.HTML(open(URI.escape(surprises_url)))
+        surprises_doc = get_doc_from("http://www.nasdaq.com/symbol/#{ticker}/earnings-surprise")
         if surprises_doc.css("div.genTable td").any? and surprises_doc.css("div.genTable td").count > 11
             surprises_chart = surprises_doc.css("div.genTable td")
             surprises_curr_quarter = surprises_chart[-1].text.to_f
@@ -204,8 +201,7 @@ end
         # forecast_chart = forecast_doc.css("div.genTable").first.css("td")
         
         #get earnings growth
-        earnings_growth_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-growth"
-        earnings_growth_doc = Nokogiri.HTML(open(URI.escape(earnings_growth_url)))
+        earnings_growth_doc = get_doc_from("http://www.nasdaq.com/symbol/#{ticker}/earnings-growth")
         earnings_growth_digit = earnings_growth_doc.css("span#quotes_content_left_textinfo").text.scan(/\d+/).first
         earnings_growth_digit.nil? ? earnings_growth = nil : earnings_growth = earnings_growth_digit.to_f #it is the first digit in the paragraph
         if earnings_growth.nil?
@@ -221,8 +217,7 @@ end
                 
         
         # short interest - only avaiable for nasdaq-listed companies, for other companies, check NYSE website
-        short_interest_url = "http://www.nasdaq.com/symbol/#{ticker}/short-interest"
-        short_interest_doc = Nokogiri.HTML(open(URI.escape(short_interest_url)))
+        short_interest_doc = get_doc_from("http://www.nasdaq.com/symbol/#{ticker}/short-interest")
         if short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td").any?
             short_interest_chart = short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td")
             short_interest = short_interest_chart[3].text.to_f
@@ -242,8 +237,7 @@ end
                 
         
         #insider trading
-        insider_trading_url = "http://www.nasdaq.com/symbol/#{ticker}/insider-trades"
-        insider_trading_doc = Nokogiri.HTML(open(URI.escape(insider_trading_url)))
+        insider_trading_doc = get_doc_from("http://www.nasdaq.com/symbol/#{ticker}/insider-trades")
         if insider_trading_doc.css("div.infoTable.floatL.marginT25px.paddingT10px td.center").any?
             insider_trading_chart = insider_trading_doc.css("div.infoTable.floatL.marginT25px.paddingT10px td.center")
             insider_trading_chart[-2].text.include?('(') ? insider_trading = -1 * insider_trading_chart[-2].text.scan(/\d+/).join.to_i : insider_trading = insider_trading_chart[-2].text.scan(/\d+/).join.to_i
@@ -293,11 +287,3 @@ end
                             )
     end
 end
-
-# @tickers.each do |key, ticker|
-#     Stock.create(name: ticker[:name], 
-#                 price: ticker[:price], 
-#                 rev_curr_year: ticker[:rev_curr_year])
-    
-    
-# end

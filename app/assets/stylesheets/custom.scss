@@ -19,14 +19,19 @@
 }
 
 /* universal */
-
+td {
+  padding-left: 10px;
+  
+}
 body {
   padding-top: 60px;
 }
 .pass{
   color: green;
+  font-weight: bold;
   
 }
 .fail{
   color: red;
+  font-weight: bold;
 }
