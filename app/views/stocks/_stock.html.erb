@@ -2,71 +2,26 @@
     <td><%= stock.name %></td>
     <td><%= stock.price%></td>
         <!--Dividends-->
-    <td><%=stock.dividends%></td>
+    <td><%= stock.dividends%></td>
     
     <!--REV score-->
-    <%if stock.rev_curr_year.zero? or stock.rev_last_year.zero? or stock.rev_last_2_year.zero? %>
-        <td>N/A</td>
-    <%elsif stock.rev_curr_year > stock.rev_last_year and stock.rev_last_year > stock.rev_last_2_year %>
-        <td><b class="pass">Pass</b></td>
-    <%else%>
-        <td><b class="fail">Fail</b></td>
-    <%end%>
-    
+    <td class="<%= stock.rev_score.nil? ? 'N/A' : stock.rev_score.downcase %>"><%= stock.rev_score %></td> 
     <!--EPS score-->
-    <%if stock.eps_curr_year.zero? or stock.eps_last_year.zero? or stock.eps_last_2_year.zero? %>
-        <td>N/A</td>
-    <%elsif stock.eps_curr_year > stock.eps_last_year and stock.eps_last_year > stock.eps_last_2_year %>
-        <td><b class="pass">Pass</b></td>
-    <%else%>
-        <td><b class="fail">Fail</b></td>
-    <%end%>
+    <td class="<%= stock.eps_score.nil? ? 'N/A' : stock.eps_score.downcase %>"><%= stock.eps_score %></td> 
 
     
     <!--ROE score-->
-    <%if stock.roe_curr_year.zero? or stock.roe_last_year.zero? or stock.roe_last_2_year.zero? %>
-        <td>N/A</td>
-    <%elsif stock.roe_curr_year > stock.roe_last_year and stock.roe_last_year > stock.roe_last_2_year %>
-        <td><b class="pass">Pass</b></td>
-    <%else%>
-        <td><b class="fail">Fail</b></td>
-    <%end%>
-    
+    <td class="<%= stock.roe_score.nil? ? 'N/A' : stock.roe_score.downcase %>"><%= stock.roe_score %></td> 
+
     <!--Analyst Rec-->
-    <%if stock.analyst_rec == "Buy" %>
-        <td><b class="pass">Pass</b></td>
-    <%elsif stock.analyst_rec == "Sell" %>
-        <td><b class="fail">Fail</b></td>
-    <%else%>
-        <td>N/A</td>
-    <%end%>
-    
+    <td class="<%= stock.analyst_rec_score.nil? ?  'N/A' : stock.analyst_rec_score.downcase %>"><%= stock.analyst_rec_score %></td> 
     
     <!--Surprises-->
-    <%if stock.surprises_curr_quarter.zero? or stock.surprises_last_quarter.zero? or stock.surprises_last_2_quarter.zero? %>
-        <td>N/A</td>
-    <%elsif stock.surprises_curr_quarter > 0 and stock.surprises_last_quarter > 0 and stock.surprises_last_2_quarter > 0 %>
-        <td><b class="pass">Pass</b></td>
-    <%else%>
-        <td><b class="fail">Fail</b></td>
-    <%end%>
-    
-    
+    <td class="<%= stock.surprises_score.nil? ? 'N/A' : stock.surprises_score.downcase %>"><%= stock.surprises_score %></td> 
     <!--earnings growth-->
-    <%if stock.earnings_growth.nil?%>
-        <td>N/A</td>
-    <%elsif stock.earnings_growth > 0%>
-        <td><b class="pass">Pass</b></td>
-    <%else%>
-        <td><b class="fail">Fail</b></td>
-    <%end%>
-    
+    <td class="<%= stock.earnings_growth_score.nil? ? 'N/A' : stock.earnings_growth_score.downcase %>"><%= stock.earnings_growth_score %></td> 
     <!--Short interest-->
-    <%if stock.short_interest == -1 %>
-        <td>N/A</td>
-    <%elsif stock.short_interest <= 2 %>
-        <td><b class="pass">Pass</b></td>
-    <%else%>
-        <td><b class="fail">Fail</b></td>
-    <%end%>
+    <td class="<%= stock.short_interest_score.nil? ? 'N/A' : stock.short_interest_score.downcase %>"><%= stock.short_interest_score %></td> 
+    <!--Insider Trading-->
+    <td class="<%= stock.insider_trading_score.nil? ? 'N/A' : stock.insider_trading_score.downcase %>"><%= stock.insider_trading_score %></td> 
 </tr>

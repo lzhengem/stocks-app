@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170225185044) do
+ActiveRecord::Schema.define(version: 20170226034411) do
 
   create_table "stocks", force: :cascade do |t|
     t.text     "name"
@@ -34,6 +34,17 @@ ActiveRecord::Schema.define(version: 20170225185044) do
     t.float    "surprises_last_2_quarter"
     t.float    "earnings_growth"
     t.float    "short_interest"
+    t.integer  "insider_trading"
+    t.string   "rev_score"
+    t.string   "eps_score"
+    t.string   "roe_score"
+    t.string   "analyst_rec_score"
+    t.string   "surprises_score"
+    t.string   "earnings_growth_score"
+    t.string   "short_interest_score"
+    t.string   "insider_trading_score"
+    t.integer  "pass_count"
+    t.integer  "fail_count"
   end
 
 end

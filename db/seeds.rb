@@ -35,6 +35,8 @@ end
 
     doc.css('h3').map do |link|
         ticker = link.content.strip.downcase
+        pass_count = 0
+        fail_count = 0
         
         #get price info
         ticker_doc = Nokogiri.HTML(open(URI.escape("http://www.nasdaq.com/symbol/#{ticker}")))
@@ -87,7 +89,26 @@ end
         else
             rev_curr_year = rev_last_year = rev_last_2_year = eps_curr_year = eps_last_year = eps_last_2_year = 0
             dividends = "N/A"
+        end
+        
+        if rev_curr_year ==  0
+            rev_score = "N/A"
+        elsif rev_curr_year > rev_last_year and rev_last_year > rev_last_2_year
+            rev_score = "Pass"
+            pass_count += 1
+        else 
+            rev_score = "Fail"
+            fail_count += 1
+        end
             
+        if eps_curr_year ==  0
+            eps_score = "N/A"
+        elsif eps_curr_year > eps_last_year and eps_last_year > eps_last_2_year
+            eps_score = "Pass"
+            pass_count += 1
+        else 
+            eps_score = "Fail"
+            fail_count += 1
         end
         
         # get return on equity ROE
@@ -99,6 +120,16 @@ end
             roe_last_2_year = roe_info[-2].text.to_f
         else
             roe_curr_year = roe_last_year = roe_last_2_year = 0
+        end
+        
+        if roe_curr_year.zero?
+            roe_score = "N/A"
+        elsif roe_curr_year > roe_last_year and roe_last_year > roe_last_2_year
+            roe_score = "Pass"
+            pass_count += 1
+        else
+            roe_score = "Fail"
+            fail_count += 1
         end
         
         #get analyst recomendations
@@ -121,6 +152,7 @@ end
                 end
                 break if analyst_x_coordinate > 0
             end
+            
             if analyst_x_coordinate == 0 #if the bar is not found, then give 'N/A'
                 analyst_rec = "N/A"
             elsif analyst_x_coordinate > buy_x_coordinate #if the bar is in the 'Buy' zone, then Buy
@@ -131,6 +163,17 @@ end
         else
             analyst_rec = "N/A" #if the chart isnot found, then 'N/A'
         end
+        
+        if analyst_rec == "N/A"
+            analyst_rec_score = "N/A"
+        elsif analyst_rec == "Buy"
+            analyst_rec_score = "Pass"
+            pass_count += 1
+        else
+            analyst_rec_score = "Fail"
+            fail_count += 1
+        end
+                
         
         #get earning surprises
         surprises_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-surprise"
@@ -144,6 +187,17 @@ end
             surprises_curr_quarter = surprises_last_quarter = surprises_last_2_quarter = 0
         end
         
+        if surprises_curr_quarter.zero?
+            surprises_score = "N/A"
+        elsif surprises_curr_quarter > 0 and surprises_last_quarter > 0 and surprises_last_2_quarter > 0
+            surprises_score = "Pass"
+            pass_count += 1
+        else
+            surprises_score = "Fail"
+            fail_count += 1
+        end
+                
+        
         #get earnings forecast
         # forecast_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-forecast"
         # forecast_doc = Nokogiri.HTML(open(URI.escape(forecast_url)))
@@ -154,6 +208,17 @@ end
         earnings_growth_doc = Nokogiri.HTML(open(URI.escape(earnings_growth_url)))
         earnings_growth_digit = earnings_growth_doc.css("span#quotes_content_left_textinfo").text.scan(/\d+/).first
         earnings_growth_digit.nil? ? earnings_growth = nil : earnings_growth = earnings_growth_digit.to_f #it is the first digit in the paragraph
+        if earnings_growth.nil?
+            earnings_growth_score = "N/A"
+        elsif earnings_growth > 0
+            earnings_growth_score = "Pass"
+            pass_count += 1
+        else
+            earnings_growth_score = "Fail"
+            fail_count += 1
+        end
+        
+                
         
         # short interest - only avaiable for nasdaq-listed companies, for other companies, check NYSE website
         short_interest_url = "http://www.nasdaq.com/symbol/#{ticker}/short-interest"
@@ -165,24 +230,66 @@ end
             short_interest = -1
         end
         
+        if short_interest == -1
+            short_interest_score = "N/A"
+        elsif short_interest < 2        #if its less than 2 days, then it passes
+            short_interest_score = "Pass"
+            pass_count += 1
+        else
+            short_interest_score = "Fail"
+            fail_count += 1
+        end
+                
+        
+        #insider trading
+        insider_trading_url = "http://www.nasdaq.com/symbol/#{ticker}/insider-trades"
+        insider_trading_doc = Nokogiri.HTML(open(URI.escape(insider_trading_url)))
+        if insider_trading_doc.css("div.infoTable.floatL.marginT25px.paddingT10px td.center").any?
+            insider_trading_chart = insider_trading_doc.css("div.infoTable.floatL.marginT25px.paddingT10px td.center")
+            insider_trading_chart[-2].text.include?('(') ? insider_trading = -1 * insider_trading_chart[-2].text.scan(/\d+/).join.to_i : insider_trading = insider_trading_chart[-2].text.scan(/\d+/).join.to_i
+        else
+            insider_trading = 0
+        end
+        if insider_trading == 0
+            insider_trading_score = "N/A"
+        elsif insider_trading > 0
+            insider_trading_score = "Pass"
+            pass_count += 1
+        else
+            insider_trading_score = "Fail"
+            pass_count +=1
+        end
+            
+        
         Stock.create(name: ticker.upcase, 
                             price: price, 
                             rev_curr_year: rev_curr_year,
                             rev_last_year: rev_last_year,
                             rev_last_2_year: rev_last_2_year,
+                            rev_score: rev_score, #need to add the scores to the model
                             eps_curr_year: eps_curr_year,
                             eps_last_year: eps_last_year,
                             eps_last_2_year: eps_last_2_year,
+                            eps_score: eps_score,
                             dividends: dividends,
                             roe_curr_year: roe_curr_year,
                             roe_last_year: roe_last_year,
                             roe_last_2_year: roe_last_2_year,
+                            roe_score: roe_score,
                             analyst_rec: analyst_rec,
+                            analyst_rec_score: analyst_rec_score,
                             surprises_curr_quarter: surprises_curr_quarter,
                             surprises_last_quarter: surprises_last_quarter,
                             surprises_last_2_quarter: surprises_last_2_quarter,
+                            surprises_score: surprises_score,
                             earnings_growth: earnings_growth,
-                            short_interest: short_interest
+                            earnings_growth_score: earnings_growth_score,
+                            short_interest: short_interest,
+                            short_interest_score: short_interest_score,
+                            insider_trading: insider_trading,
+                            insider_trading_score: insider_trading_score,
+                            pass_count: pass_count,
+                            fail_count: fail_count
                             )
     end
 end
