@@ -212,8 +212,10 @@ end
         if forecast_array.empty?
             forecast_score = "N/A"
         elsif ascending? forecast_array
+            pass_count += 1
             forecast_score = "Pass"
         else
+            fail_count += 1
             forecast_score = "Fail"
         end
         

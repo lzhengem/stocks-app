@@ -7,9 +7,11 @@
     <td class="<%= stock.eps_score.nil? ? 'N/A' : stock.eps_score.downcase %>"><%= stock.eps_score %></td> 
     <td class="<%= stock.roe_score.nil? ? 'N/A' : stock.roe_score.downcase %>"><%= stock.roe_score %></td> 
     <td class="<%= stock.analyst_rec_score.nil? ?  'N/A' : stock.analyst_rec_score.downcase %>"><%= stock.analyst_rec_score %></td>
-    <td class="<%= stock.surprises_score.nil? ? 'N/A' : stock.surprises_score.downcase %>"><%= stock.surprises_score %></td> 
+    <td class="<%= stock.surprises_score.nil? ? 'N/A' : stock.surprises_score.downcase %>"><%= stock.surprises_score %></td>
+    <td class="<%= stock.forecast_score.nil? ? 'N/A' : stock.forecast_score.downcase %>"><%= stock.forecast_score %></td> 
     <td class="<%= stock.earnings_growth_score.nil? ? 'N/A' : stock.earnings_growth_score.downcase %>"><%= stock.earnings_growth_score %></td> 
     <td class="<%= stock.short_interest_score.nil? ? 'N/A' : stock.short_interest_score.downcase %>"><%= stock.short_interest_score %></td> 
     <td class="<%= stock.insider_trading_score.nil? ? 'N/A' : stock.insider_trading_score.downcase %>"><%= stock.insider_trading_score %></td> 
     <td><%= stock.pass_count %></td> 
+    <!--<td><%= stock.fail_count %></td> -->
 </tr>

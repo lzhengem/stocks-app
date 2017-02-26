@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170226034411) do
+ActiveRecord::Schema.define(version: 20170226182208) do
 
   create_table "stocks", force: :cascade do |t|
     t.text     "name"
@@ -45,6 +45,11 @@ ActiveRecord::Schema.define(version: 20170226034411) do
     t.string   "insider_trading_score"
     t.integer  "pass_count"
     t.integer  "fail_count"
+    t.float    "forecast_year_0"
+    t.float    "forecast_year_1"
+    t.float    "forecast_year_2"
+    t.float    "forecast_year_3"
+    t.string   "forecast_score"
   end
 
 end
