@@ -10,8 +10,7 @@ gem 'rmagick', '~> 2.15', '>= 2.15.4'
 gem 'mini_magick' #for getting info from pictures
 gem 'rtesseract' #for getting info from pictures
 
-# Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -45,6 +44,8 @@ gem 'json'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
+  # Use sqlite3 as the database for Active Record
+  gem 'sqlite3'
 end
 
 group :development do
@@ -53,5 +54,10 @@ group :development do
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+  
+group :production do
+  gem 'pg', '0.18.4' #heroku uses postgres
+end
+
 end
 
