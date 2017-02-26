@@ -31,7 +31,7 @@ end
 # pages are separated by the letters
 # ('A'..'B').each do |letter|
 ('A'..'Z').each do |letter|
-    doc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}"
+    doc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}&pagesize=200"
 
     doc.css('h3').map do |link|
         ticker = link.content.strip.downcase
