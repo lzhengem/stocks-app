@@ -272,6 +272,10 @@ end
             insider_trading_score = "Fail"
             fail_count +=1
         end
+        
+        # weighted alpha - you can to search for the company, then click on the second link - however, nokogiri was not able to find the link...
+        # sector_doc = get_doc_from "http://www.nasdaq.com/markets/barchart-sectors.aspx?sym=#{ticker}"
+        
             
         
         Stock.create(name: ticker.upcase, 

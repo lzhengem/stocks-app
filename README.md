@@ -6,4 +6,6 @@ whereas stocks with 5 or less are not.
 However, there is no easy way to check at a glance if the stock you are looking at passes these tests.
 
 This project systematically scrapes the information from Nasdaq's website for each of the stocks they have listed,
-compares each stock's attributes to Nasdaq's rquirements, and list the stocks with the highest potential in descending order.
+compares each stock's attributes to Nasdaq's recomendation, and list the stocks with the highest potential on top.
+
+Currently, only 9 of the criteria are being monitored.
