@@ -1,6 +1,7 @@
 <h1>Stocks page</h1>
+Last updated: <%= @stocks.first.updated_at.to_date %>
 
-
+<br><br>
 <table>
     <tr>
         <td>Stock Name</td>
@@ -20,4 +21,5 @@
     </tr>
 <%= render @stocks %>
 </table>
+
 <%= will_paginate %>
