@@ -1,24 +1,9 @@
+Nasdaq recommends 12 steps to analyze if a stock is worth to buy: http://www.nasdaq.com/investing/dozen/
 
-     ,-----.,--.                  ,--. ,---.   ,--.,------.  ,------.
-    '  .--./|  | ,---. ,--.,--. ,-|  || o   \  |  ||  .-.  \ |  .---'
-    |  |    |  || .-. ||  ||  |' .-. |`..'  |  |  ||  |  \  :|  `--, 
-    '  '--'\|  |' '-' ''  ''  '\ `-' | .'  /   |  ||  '--'  /|  `---.
-     `-----'`--' `---'  `----'  `---'  `--'    `--'`-------' `------'
-    ----------------------------------------------------------------- 
+Ranking Stocks based on these 12 criteria, stocks that have 9+ 'passing scores' are strong stocks to buy,
+whereas stocks with 5 or less are not.
 
+However, there is no easy way to check at a glance if the stock you are looking at passes these tests.
 
-Welcome to your Rails project on Cloud9 IDE!
-
-To get started, just do the following:
-
-1. Run the project with the "Run Project" button in the menu bar on top of the IDE.
-2. Preview your new app by clicking on the URL that appears in the Run panel below (https://stocks-app-missimi.c9users.io/).
-
-Happy coding!
-The Cloud9 IDE team
-
-
-## Support & Documentation
-
-Visit http://docs.c9.io for support, or to learn more about using Cloud9 IDE. 
-To watch some training videos, visit http://www.youtube.com/user/c9ide
+This project systematically scrapes the information from Nasdaq's website for each of the stocks they have listed,
+compares each stock's attributes to Nasdaq's rquirements, and list the stocks with the highest potential in descending order.
