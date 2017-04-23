@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 20170226182208) do
     t.float    "surprises_last_2_quarter"
     t.float    "earnings_growth"
     t.float    "short_interest"
-    t.integer  "insider_trading"
+    t.integer  "insider_trading",          limit: 8
     t.string   "rev_score"
     t.string   "eps_score"
     t.string   "roe_score"
