@@ -1,7 +1,7 @@
 <h1>Stocks page</h1>
 Last updated: <%= @stocks.first.updated_at.to_date %>
 
-<%=form_tag "stocks", method: :post do %>
+<%=form_tag stocks_path, method: :post do %>
 <%= text_field_tag "letter" %>
 <%= submit_tag "update" %>
 <% end %>
