@@ -13,5 +13,6 @@
     <td class="<%= stock.short_interest_score.nil? ? 'N/A' : stock.short_interest_score.downcase %>"><%= stock.short_interest_score %></td> 
     <td class="<%= stock.insider_trading_score.nil? ? 'N/A' : stock.insider_trading_score.downcase %>"><%= stock.insider_trading_score %></td> 
     <td><%= stock.pass_count %></td> 
+    <td><%= stock.updated_at.to_date %></td> 
     <!--<td><%= stock.fail_count %></td> -->
 </tr>

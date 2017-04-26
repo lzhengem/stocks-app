@@ -1,8 +1,13 @@
 <h1>Stocks page</h1>
 Last updated: <%= @stocks.first.updated_at.to_date %>
 
+<<<<<<< HEAD
 <%=form_tag stocks_path, method: :post do %>
 <%= text_field_tag "letter" %>
+=======
+<%=form_tag "stocks", method: :post do %>
+<%= text_field_tag "name" %>
+>>>>>>> scrape-all-pages
 <%= submit_tag "update" %>
 <% end %>
 
@@ -22,6 +27,7 @@ Last updated: <%= @stocks.first.updated_at.to_date %>
         <td>Short Interest</td>
         <td>Insider Trading</td>
         <td>Passing Scores</td>
+        <td>Updated on</td>
         <!--<td>Failing Scores</td>-->
     </tr>
 <%= render @stocks %>
