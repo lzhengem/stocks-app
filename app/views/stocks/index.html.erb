@@ -2,7 +2,7 @@
 Last updated: <%= @stocks.first.updated_at.to_date %>
 
 <%=form_tag "stocks", method: :post do %>
-<%= text_field_tag "letter" %>
+<%= text_field_tag "name" %>
 <%= submit_tag "update" %>
 <% end %>
 
@@ -22,6 +22,7 @@ Last updated: <%= @stocks.first.updated_at.to_date %>
         <td>Short Interest</td>
         <td>Insider Trading</td>
         <td>Passing Scores</td>
+        <td>Updated on</td>
         <!--<td>Failing Scores</td>-->
     </tr>
 <%= render @stocks %>
