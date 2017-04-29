@@ -1,13 +1,14 @@
 <h1>Stocks page</h1>
 Last updated: <%= @stocks.first.updated_at.to_date %>
 
-<<<<<<< HEAD
-<%=form_tag stocks_path, method: :post do %>
-<%= text_field_tag "letter" %>
-=======
+Currently Still under construction.
+This app checks for 10 of the 12 tips from <%= link_to "NASDAQ", "http://www.nasdaq.com/investing/dozen/"%> to see if the stock is worth buying.
+According to NASDAQ, stocks above a score of 8 are great buys and scores above a score of 6 are decent buys. This is not investment advice, please buy at your own discretion.
+
+
+
 <%=form_tag "stocks", method: :post do %>
 <%= text_field_tag "name" %>
->>>>>>> scrape-all-pages
 <%= submit_tag "update" %>
 <% end %>
 
