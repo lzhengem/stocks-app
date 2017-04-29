@@ -1,5 +1,5 @@
 <tr>
-    <td><%= stock.name %></td>
+    <td><%= link_to stock.name "http://www.nasdaq.com/symbol/#{URI.escape(stock.name)}/revenue-eps"%></td>
     <td><%= stock.price%></td>
         <!--Dividends-->
     <td><%= stock.dividends%></td>
