@@ -19,7 +19,7 @@ class StocksController < ApplicationController
         if @stock = Stock.find_by(name: params[:name]) || Stock.find_by(name: params[:name].upcase)
             @stock.destroy
         end
-        @stock = Stock.new(name: params[:name])
+        @stock = Stock.new(name: params[:name].downcase)
         @stock.update
         # flash[:success] = "#{@stock.name} has been saved"
         
