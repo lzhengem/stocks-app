@@ -1,5 +1,6 @@
 include ApplicationHelper
 
+# uses the metrics found in http://www.nasdaq.com/investing/dozen/weighted-alpha.aspx
 class Stock < ActiveRecord::Base
     def get_price
         ticker_doc = get_doc_from "http://www.nasdaq.com/symbol/#{name}"
@@ -72,12 +73,13 @@ class Stock < ActiveRecord::Base
             # if the revenue of current year is greater than last year, and last year was greater than 2 years ago, then "Pass"
             rev_score = (get_total_rev > get_total_rev(1) and get_total_rev(1) > get_total_rev(2)) ? "Pass" : "Fail"
         else
-        # if total rev data is onot available, use last month's rev data
+        # if total rev data is not available, use last month's rev data
             rev_score = (get_latest_month_rev > get_latest_month_rev(1) and get_latest_month_rev(1)> get_latest_month_rev(2)) ? "Pass": "Fail"
         end
         rev_score
     end
     
+    # need to work on getting eps score
     def get_total_eps(years_ago = 0)
         #if it gives a number other than 0,1,2 there is no data for that set
         raise_exception_if_not_0_to_2(years_ago)
@@ -128,6 +130,19 @@ class Stock < ActiveRecord::Base
         return_eps.to_f
     end
 
+    # if the eps has been increasing from year to year, then it is a "Pass"
+    def get_eps_score
+        # check if total eps is increasing
+        if get_total_eps != 0
+            # if the eps of current year is greater than last year, and last year was greater than 2 years ago, then "Pass"
+            eps_score = (get_total_eps > get_total_eps(1) and get_total_eps(1) > get_total_eps(2)) ? "Pass" : "Fail"
+        else
+        # if total eps data is not available, use last month's rev data
+            eps_score = (get_latest_month_eps > get_latest_month_eps(1) and get_latest_month_eps(1)> get_latest_month_eps(2)) ? "Pass": "Fail"
+        end
+        eps_score
+    end
+    
     def get_total_dividends
         dividends = 0
         rev_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/revenue-eps")
