@@ -248,6 +248,13 @@ class Stock < ActiveRecord::Base
         analyst_rec
     end
     
+    # if the rec is "Buy" then it is a "Pasas"
+    def get_rec_score
+        # check if get_rec is a buy
+        rec_score = (get_rec == "Buy") ? "Pass" : "Fail"
+        rec_score
+    end
+    
     def get_surprise(quarters_ago=0)
         raise_exception_if_not_0_to_2(quarters_ago)
         surprises_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/earnings-surprise")
@@ -329,9 +336,9 @@ class Stock < ActiveRecord::Base
                             roe_curr_year: get_roe,
                             roe_last_year: get_roe(1),
                             roe_last_2_year: get_roe(2),
-                            # roe_score: roe_score,
+                            roe_score: get_roe_score,
                             analyst_rec: get_rec,
-                            # analyst_rec_score: analyst_rec_score,
+                            analyst_rec_score: get_rec_score,
                             surprises_curr_quarter: get_surprise,
                             surprises_last_quarter: get_surprise(1),
                             surprises_last_2_quarter: get_surprise(2),
