@@ -218,27 +218,7 @@ class Stock < ActiveRecord::Base
         end
         return_surprises
     end
-    # def get_surprise
-    #     surprises_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/earnings-surprise")
-    #     if surprises_doc.css("div.genTable td").any? and surprises_doc.css("div.genTable td").count > 11
-    #         surprises_chart = surprises_doc.css("div.genTable td")
-    #         surprises_curr_quarter = surprises_chart[-1].text.to_f
-    #         surprises_last_quarter = surprises_chart[-6].text.to_f
-    #         surprises_last_2_quarter = surprises_chart[-11].text.to_f
-    #     else
-    #         surprises_curr_quarter = surprises_last_quarter = surprises_last_2_quarter = 0
-    #     end
-        
-    #     if surprises_curr_quarter.zero?
-    #         surprises_score = "N/A"
-    #     elsif surprises_curr_quarter > 0 and surprises_last_quarter > 0 and surprises_last_2_quarter > 0
-    #         surprises_score = "Pass"
-    #     else
-    #         surprises_score = "Fail"
-    #     end
-    #     {surprises_curr_quarter: surprises_curr_quarter, surprises_last_quarter: surprises_last_quarter, surprises_last_2_quarter: surprises_last_2_quarter, surprises_score: surprises_score}
-    # end
-    
+
     def get_forecast
         #get earnings forecast
         # forecast_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-forecast"
