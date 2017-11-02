@@ -247,7 +247,7 @@ class Stock < ActiveRecord::Base
         else
             earnings_growth_score = "Fail"
         end
-        {earnings_growth_score: earnings_growth_score}
+        earnings_growth_score
     end
     
     def get_short_interest
