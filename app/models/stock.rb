@@ -33,10 +33,7 @@ class Stock < ActiveRecord::Base
                     #rev_info 5 is latest month eps header, 6-8 contains eps info for last 3 years
                     #rev_info 13 contains total headers, rev_info 14 contains total rev header
                     #if there is info in the latest month, then we can use totals to calculate rev and eps
-                    
-                    # rev_curr_year = rev_info[15].text.scan(/[\w+]/).join.get_full_number
-                    # rev_last_year = rev_info[16].text.scan(/[\w+]/).join.get_full_number
-                    # rev_last_2_year = rev_info[17].text.scan(/[\w+]/).join.get_full_number
+
                     #current year rev is at 15, last year's rev is at 16, 2 year's ago rev is at 17
                     return_rev = rev_info[15 + years_ago].text.scan(/[\w+]/).join.get_full_number
                 end
@@ -61,9 +58,7 @@ class Stock < ActiveRecord::Base
             latest_month = rev_headers[-3].text
             rev_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
             rev_info = rev_chart[start..-1]
-            # rev_curr_year = rev_info[2].text.scan(/[\w+]/).join.get_full_number
-            # rev_last_year = rev_info[3].text.scan(/[\w+]/).join.get_full_number
-            # rev_last_2_year = rev_info[4].text.scan(/[\w+]/).join.get_full_number
+
             #latest month rev info is at 2, 1 year ago at index 3, 2 years ago at index 4
             return_rev = rev_info[2 + years_ago].text.scan(/[\w+]/).join.get_full_number
         end
@@ -88,10 +83,6 @@ class Stock < ActiveRecord::Base
                 start = 0
                 eps_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)} #looping through the December (FYE) info
                 eps_info = eps_chart[start..-1]
-                #get eps info
-                # eps_curr_year = eps_info[19].text.to_f
-                # eps_last_year = eps_info[20].text.to_f
-                # eps_last_2_year = eps_info[21].text.to_f
                 #eps this year is at index 19, last year at 20, 2 years ago at 21
                 return_eps = eps_info[19 + years_ago].text.to_f
             end
@@ -117,10 +108,7 @@ class Stock < ActiveRecord::Base
             latest_month = eps_headers[-3].text
             eps_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
             eps_info = eps_chart[start..-1]
-            #get eps info    
-            # eps_curr_year = eps_info[6].text.to_f
-            # eps_last_year = eps_info[7].text.to_f
-            # eps_last_2_year = eps_info[8].text.to_f
+
             #eps latest month this year is at index 6, last year at 7, 2 years ago at 8
             return_eps = eps_info[6 + years_ago].text.to_f
         end
@@ -171,26 +159,39 @@ class Stock < ActiveRecord::Base
         end
         dividends.to_f
     end
-    
-    def get_roe
+
+    # need to figure out where the roe is held
+    def get_roe(years_ago=0)
+        # raise_exception_if_not_0_to_2(years_ago)
         roe_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/financials?query=ratios")
-        if (roe_info = roe_doc.css("div#financials-iframe-wrap td")).any?
-            roe_curr_year = roe_info[-4].text.to_f #the roe for the current year is the 4th from last
-            roe_last_year = roe_info[-3].text.to_f
-            roe_last_2_year = roe_info[-2].text.to_f
-        else
-            roe_curr_year = roe_last_year = roe_last_2_year = 0
-        end
-        
-        if roe_curr_year.zero?
-            roe_score = "N/A"
-        elsif roe_curr_year > roe_last_year and roe_last_year > roe_last_2_year
-            roe_score = "Pass"
-        else
-            roe_score = "Fail"
-        end
-        {roe_curr_year: roe_curr_year, roe_last_year: roe_last_year, roe_last_2_year: roe_last_2_year, roe_score: roe_score}
+        roe_info = roe_doc.css("div#financials-iframe-wrap td")
+            # roe_curr_year = roe_info[-4].text.to_f #the roe for the after-tax row current year is the 4th from last
+            # roe_last_year = roe_info[-3].text.to_f
+            # roe_last_2_year = roe_info[-2].text.to_f
+            # roe for current year is at -4, last year at -3, 2 years ago at -2
+            return_roe = roe_info[-4 + years_ago].text.to_f
+        return_roe.to_i
     end
+    
+    # def get_roe
+    #     roe_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/financials?query=ratios")
+    #     if (roe_info = roe_doc.css("div#financials-iframe-wrap td")).any?
+    #         roe_curr_year = roe_info[-4].text.to_f #the roe for the current year is the 4th from last
+    #         roe_last_year = roe_info[-3].text.to_f
+    #         roe_last_2_year = roe_info[-2].text.to_f
+    #     else
+    #         roe_curr_year = roe_last_year = roe_last_2_year = 0
+    #     end
+        
+    #     if roe_curr_year.zero?
+    #         roe_score = "N/A"
+    #     elsif roe_curr_year > roe_last_year and roe_last_year > roe_last_2_year
+    #         roe_score = "Pass"
+    #     else
+    #         roe_score = "Fail"
+    #     end
+    #     {roe_curr_year: roe_curr_year, roe_last_year: roe_last_year, roe_last_2_year: roe_last_2_year, roe_score: roe_score}
+    # end
     
     def get_rec
         rec_url = URI.parse(URI.escape("http://www.nasdaq.com/charts/#{name}_rm.jpeg"))
