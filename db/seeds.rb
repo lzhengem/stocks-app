@@ -49,13 +49,17 @@ tickers = []
         tickers << ticker
     end
 end
-tickers.each do |ticker|
+start = 109
+start = start + 20
+new_ticker =tickers[start..start+20]
+new_ticker.each do |ticker|
     if stock = Stock.find_by(name: ticker)
         stock.destroy
     end
     new_stock = Stock.new(name: ticker)
     new_stock.update
 end
+tickers.index "AEZS"
 
 
 
