@@ -173,26 +173,6 @@ class Stock < ActiveRecord::Base
         return_roe.to_i
     end
     
-    # def get_roe
-    #     roe_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/financials?query=ratios")
-    #     if (roe_info = roe_doc.css("div#financials-iframe-wrap td")).any?
-    #         roe_curr_year = roe_info[-4].text.to_f #the roe for the current year is the 4th from last
-    #         roe_last_year = roe_info[-3].text.to_f
-    #         roe_last_2_year = roe_info[-2].text.to_f
-    #     else
-    #         roe_curr_year = roe_last_year = roe_last_2_year = 0
-    #     end
-        
-    #     if roe_curr_year.zero?
-    #         roe_score = "N/A"
-    #     elsif roe_curr_year > roe_last_year and roe_last_year > roe_last_2_year
-    #         roe_score = "Pass"
-    #     else
-    #         roe_score = "Fail"
-    #     end
-    #     {roe_curr_year: roe_curr_year, roe_last_year: roe_last_year, roe_last_2_year: roe_last_2_year, roe_score: roe_score}
-    # end
-    
     def get_rec
         rec_url = URI.parse(URI.escape("http://www.nasdaq.com/charts/#{name}_rm.jpeg"))
         rec_req = Net::HTTP.new(rec_url.host, rec_url.port) #sometimes this chart is not avaiable, so check to see if its there
