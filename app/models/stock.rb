@@ -137,7 +137,7 @@ class Stock < ActiveRecord::Base
             # if the eps of current year is greater than last year, and last year was greater than 2 years ago, then "Pass"
             eps_score = (get_total_eps > get_total_eps(1) and get_total_eps(1) > get_total_eps(2)) ? "Pass" : "Fail"
         else
-        # if total eps data is not available, use last month's rev data
+        # if total eps data is not available, use last month's eps data
             eps_score = (get_latest_month_eps > get_latest_month_eps(1) and get_latest_month_eps(1)> get_latest_month_eps(2)) ? "Pass": "Fail"
         end
         eps_score
@@ -165,28 +165,28 @@ class Stock < ActiveRecord::Base
         dividends.to_f
     end    
     
-    def get_latest_month_dividends
-        dividends=0
-        rev_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/revenue-eps")
-        if rev_doc.css('iframe#frmMain').any?
-            rev_chart_url = rev_doc.css('iframe#frmMain').first['src'] #gets the page where the chart resides
-            rev_chart_doc = get_doc_from(rev_chart_url)
-            rev_chart = rev_chart_doc.css("td.body1")
-            rev_headers = rev_chart_doc.css("td.body1 b")
+    # def get_latest_month_dividends
+    #     dividends=0
+    #     rev_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/revenue-eps")
+    #     if rev_doc.css('iframe#frmMain').any?
+    #         rev_chart_url = rev_doc.css('iframe#frmMain').first['src'] #gets the page where the chart resides
+    #         rev_chart_doc = get_doc_from(rev_chart_url)
+    #         rev_chart = rev_chart_doc.css("td.body1")
+    #         rev_headers = rev_chart_doc.css("td.body1 b")
         
-            if rev_headers[-2] #if the chart is avaiable for this symbol get rev info
-                latest_month = rev_headers[-2].text
-                start = 0
-                rev_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
-                rev_info = rev_chart[start..-1] #contains all the relavent information rev_info 0-1 contains headers then 2-4 contains the info revenue from the last 3 years
+    #         if rev_headers[-2] #if the chart is avaiable for this symbol get rev info
+    #             latest_month = rev_headers[-2].text
+    #             start = 0
+    #             rev_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
+    #             rev_info = rev_chart[start..-1] #contains all the relavent information rev_info 0-1 contains headers then 2-4 contains the info revenue from the last 3 years
                 
-                puts rev_info
-                #get dividends
-                dividends = rev_info[10].text
-            end
-        end
-        dividends.to_f
-    end
+    #             puts rev_info
+    #             #get dividends
+    #             dividends = rev_info[10].text
+    #         end
+    #     end
+    #     dividends.to_f
+    # end
 
     def get_roe(years_ago=0)
         # raise_exception_if_not_0_to_2(years_ago)
@@ -198,6 +198,19 @@ class Stock < ActiveRecord::Base
             # roe for current year is at -4, last year at -3, 2 years ago at -2
             return_roe = roe_info[-4 + years_ago].text.to_f
         return_roe.to_i
+    end
+
+    # if the roe has been increasing for two consecutive years, then it is a "Pass"
+    def get_roe_score
+        # check if total roe is increasing
+        if get_roe != 0
+            # if the roe of current year is greater than last year, and last year was greater than 2 years ago, then "Pass"
+            roe_score = (get_roe > get_roe(1) and get_roe(1) > get_roe(2)) ? "Pass" : "Fail"
+        else
+        # if total roe data is not available, use last month's roe data
+            roe_score = (get_roe > get_roe(1) and get_roe(1)> get_roe(2)) ? "Pass": "Fail"
+        end
+        roe_score
     end
     
     def get_rec
@@ -311,7 +324,7 @@ class Stock < ActiveRecord::Base
                             eps_curr_year: get_total_eps,
                             eps_last_year: get_total_eps(1),
                             eps_last_2_year: get_total_eps(2),
-                            # eps_score: eps_score,
+                            eps_score: get_eps_score,
                             dividends: get_total_dividends,
                             roe_curr_year: get_roe,
                             roe_last_year: get_roe(1),
