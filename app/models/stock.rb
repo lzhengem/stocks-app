@@ -252,23 +252,13 @@ class Stock < ActiveRecord::Base
     
     def get_short_interest
         # short interest - only avaiable for nasdaq-listed companies, for other companies, check NYSE website
+        short_interest = -1 #if short_interest is negative, that means it wasn't found
         short_interest_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/short-interest")
         if short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td").any?
             short_interest_chart = short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td")
             short_interest = short_interest_chart[3].text.to_f
-        else
-            short_interest = -1
         end
-        
-        if short_interest == -1
-            short_interest_score = "N/A"
-        elsif short_interest < 2        #if its less than 2 days, then it passes
-            short_interest_score = "Pass"
-        else
-            short_interest_score = "Fail"
-        end
-        {short_interest: short_interest, short_interest_score: short_interest_score}
-        
+        short_interest #if short interest is less than 2 days, then it is good
     end
     
     def get_insider
