@@ -160,7 +160,6 @@ class Stock < ActiveRecord::Base
         dividends.to_f
     end
 
-    # need to figure out where the roe is held
     def get_roe(years_ago=0)
         # raise_exception_if_not_0_to_2(years_ago)
         roe_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/financials?query=ratios")
@@ -219,33 +218,50 @@ class Stock < ActiveRecord::Base
         return_surprises
     end
 
-    def get_forecast
+    #year represents the future years
+    def get_forecast(year=0)
         #get earnings forecast
         # forecast_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-forecast"
         # forecast_doc = Nokogiri.HTML(open(URI.escape(forecast_url)))
         # forecast_chart = forecast_doc.css("div.genTable").first.css("td")
         forecast_doc = get_doc_from "http://www.nasdaq.com/symbol/#{name}/earnings-forecast"
         chart = forecast_doc.css("div.genTable").first
-        forecast_array =[]
+        
         if chart.css("td") #the information is stored here in the intervals 1,8,15... (x7 + 1)
-            num_forecast = (chart.css("td").count / 7) - 1 #find out how many forecasts we have. minus 1 because of 0 indexing
-            0.upto(num_forecast) do |num| #collect all the forecasts into forecast_array
-                forecast_array[num] = chart.css("td")[7 * num + 1].text.to_f
-            end
+            return_forecast = chart.css("td")[7 * year_num + 1].text.to_f
+            # end
         end
+        return_forecast
         
-        if forecast_array.empty?
-            forecast_score = "N/A"
-        elsif ascending? forecast_array
-            forecast_score = "Pass"
-        else
-            forecast_score = "Fail"
-        end
-        
-        {forecast_year_0: forecast_array[0], forecast_year_1: forecast_array[1], 
-            forecast_year_2: forecast_array[2], forecast_year_3: forecast_array[3], 
-            forecast_score: forecast_score}
     end
+
+    # def get_forecast
+    #     #get earnings forecast
+    #     # forecast_url = "http://www.nasdaq.com/symbol/#{ticker}/earnings-forecast"
+    #     # forecast_doc = Nokogiri.HTML(open(URI.escape(forecast_url)))
+    #     # forecast_chart = forecast_doc.css("div.genTable").first.css("td")
+    #     forecast_doc = get_doc_from "http://www.nasdaq.com/symbol/#{name}/earnings-forecast"
+    #     chart = forecast_doc.css("div.genTable").first
+    #     forecast_array =[]
+    #     if chart.css("td") #the information is stored here in the intervals 1,8,15... (x7 + 1)
+    #         num_forecast = (chart.css("td").count / 7) - 1 #find out how many forecasts we have. minus 1 because of 0 indexing
+    #         0.upto(num_forecast) do |num| #collect all the forecasts into forecast_array
+    #             forecast_array[num] = chart.css("td")[7 * num + 1].text.to_f
+    #         end
+    #     end
+        
+    #     if forecast_array.empty?
+    #         forecast_score = "N/A"
+    #     elsif ascending? forecast_array
+    #         forecast_score = "Pass"
+    #     else
+    #         forecast_score = "Fail"
+    #     end
+        
+    #     {forecast_year_0: forecast_array[0], forecast_year_1: forecast_array[1], 
+    #         forecast_year_2: forecast_array[2], forecast_year_3: forecast_array[3], 
+    #         forecast_score: forecast_score}
+    # end
     
     def get_growth
         #get earnings growth
