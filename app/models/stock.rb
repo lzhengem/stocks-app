@@ -3,7 +3,8 @@ include ApplicationHelper
 class Stock < ActiveRecord::Base
     def get_price
         ticker_doc = get_doc_from "http://www.nasdaq.com/symbol/#{name}"
-        {price: ticker_doc.css("div#qwidget_lastsale.qwidget-dollar").text.tr('$','').to_f}
+        price = ticker_doc.css("div#qwidget_lastsale.qwidget-dollar").text.tr('$','').to_f
+        price
     end
     
     def raise_exception_if_not_0_to_2(years_ago)
@@ -65,6 +66,18 @@ class Stock < ActiveRecord::Base
         return_rev.to_f
     end
 
+    def get_rev_score
+        # check if total rev is increasing
+        if get_total_rev != 0
+            # if the revenue of current year is greater than last year, and last year was greater than 2 years ago, then "Pass"
+            rev_score = (get_total_rev > get_total_rev(1) and get_total_rev(1) > get_total_rev(2)) ? "Pass" : "Fail"
+        else
+        # if total rev data is onot available, use last month's rev data
+            rev_score = (get_latest_month_rev > get_latest_month_rev(1) and get_latest_month_rev(1)> get_latest_month_rev(2)) ? "Pass": "Fail"
+        end
+        rev_score
+    end
+    
     def get_total_eps(years_ago = 0)
         #if it gives a number other than 0,1,2 there is no data for that set
         raise_exception_if_not_0_to_2(years_ago)
@@ -228,7 +241,7 @@ class Stock < ActiveRecord::Base
         chart = forecast_doc.css("div.genTable").first
         
         if chart.css("td") #the information is stored here in the intervals 1,8,15... (x7 + 1)
-            return_forecast = chart.css("td")[7 * year_num + 1].text.to_f
+            return_forecast = chart.css("td")[7 * year + 1].text.to_f
             # end
         end
         return_forecast
@@ -273,7 +286,42 @@ class Stock < ActiveRecord::Base
     end
     
     def update
-        values = get_price.merge(get_rev).merge(get_eps).merge(get_dividends).merge(get_roe).merge(get_rec).merge(get_surprise).merge(get_forecast).merge(get_growth).merge(get_short_interest).merge(get_insider)
+        # values = get_price.merge(get_rev).merge(get_eps).merge(get_dividends).merge(get_roe).merge(get_rec).merge(get_surprise).merge(get_forecast).merge(get_growth).merge(get_short_interest).merge(get_insider)
+        values = {
+                            price: get_price, 
+                            rev_curr_year: get_total_rev,
+                            rev_last_year: get_total_rev(1),
+                            rev_last_2_year: get_total_rev(2),
+                            rev_score: get_rev_score, #need to add the scores to the model
+                            eps_curr_year: get_total_eps,
+                            eps_last_year: get_total_eps(1),
+                            eps_last_2_year: get_total_eps(2),
+                            # eps_score: eps_score,
+                            dividends: get_total_dividends,
+                            roe_curr_year: get_roe,
+                            roe_last_year: get_roe(1),
+                            roe_last_2_year: get_roe(2),
+                            # roe_score: roe_score,
+                            analyst_rec: get_rec,
+                            # analyst_rec_score: analyst_rec_score,
+                            surprises_curr_quarter: get_surprise,
+                            surprises_last_quarter: get_surprise(1),
+                            surprises_last_2_quarter: get_surprise(2),
+                            # surprises_score: surprises_score,
+                            earnings_growth: get_growth,
+                            # earnings_growth_score: earnings_growth_score,
+                            short_interest: get_short_interest,
+                            # short_interest_score: short_interest_score,
+                            insider_trading: get_insider,
+                            # insider_trading_score: insider_trading_score,
+                            forecast_year_0: get_forecast,
+                            forecast_year_1: get_forecast(1),
+                            forecast_year_2: get_forecast(2),
+                            forecast_year_3: get_forecast(3)
+                            #,
+                            # forecast_score: forecast_score,
+        }
+            
         update_attributes(values)
         pass_count = 0
         fail_count =0
