@@ -263,22 +263,13 @@ class Stock < ActiveRecord::Base
     
     def get_insider
         #insider trading
+        insider_trading = 0 #if insider_tranding = 0, there is no data
         insider_trading_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/insider-trades")
         if insider_trading_doc.css("div.infoTable.floatL.marginT25px.paddingT10px td.center").any?
             insider_trading_chart = insider_trading_doc.css("div.infoTable.floatL.marginT25px.paddingT10px td.center")
             insider_trading_chart[-2].text.include?('(') ? insider_trading = -1 * insider_trading_chart[-2].text.scan(/\d+/).join.to_i : insider_trading = insider_trading_chart[-2].text.scan(/\d+/).join.to_i
-        else
-            insider_trading = 0
         end
-        if insider_trading == 0
-            insider_trading_score = "N/A"
-        elsif insider_trading > 0
-            insider_trading_score = "Pass"
-        else
-            insider_trading_score = "Fail"
-        end
-        {insider_trading: insider_trading, insider_trading_score: insider_trading_score}
-        
+        insider_trading #if insider trader > 0, then it is good
     end
     
     def update
