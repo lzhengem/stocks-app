@@ -41,7 +41,7 @@ class Stock < ActiveRecord::Base
                     return_rev = rev_info[15 + years_ago].text.scan(/[\w+]/).join.get_full_number
                 end
         end
-        return_rev
+        return_rev.to_f
     end
     
     def get_latest_month_rev(years_ago = 0)
@@ -67,7 +67,7 @@ class Stock < ActiveRecord::Base
             #latest month rev info is at 2, 1 year ago at index 3, 2 years ago at index 4
             return_rev = rev_info[2 + years_ago].text.scan(/[\w+]/).join.get_full_number
         end
-        return_rev
+        return_rev.to_f
     end
 
     def get_total_eps(years_ago = 0)
@@ -96,7 +96,7 @@ class Stock < ActiveRecord::Base
                 return_eps = eps_info[19 + years_ago].text.to_f
             end
         end
-        return_eps
+        return_eps.to_f
     end
     
     def get_latest_month_eps(years_ago = 0)
@@ -124,11 +124,11 @@ class Stock < ActiveRecord::Base
             #eps latest month this year is at index 6, last year at 7, 2 years ago at 8
             return_eps = eps_info[6 + years_ago].text.to_f
         end
-        return_eps
+        return_eps.to_f
     end
-    
-    
-    def get_dividends
+
+    def get_total_dividends
+        dividends = 0
         rev_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/revenue-eps")
         if rev_doc.css('iframe#frmMain').any?
             rev_chart_url = rev_doc.css('iframe#frmMain').first['src'] #gets the page where the chart resides
@@ -144,21 +144,42 @@ class Stock < ActiveRecord::Base
                 
                 #get dividends
                 dividends = rev_info[23].text
-                
-                if dividends.to_f.zero? #if info for the latest month is missing, instead of using totals, use previous month
-                    
-                    #get dividends
-                    dividends = rev_info[10].text
-                    
-                end
-            else
-                dividends = "N/A"
             end
-        else
-            dividends = "N/A"
         end
-        {dividends: dividends}
-    end
+        dividends.to_f
+    end    
+    
+    # def get_dividends
+    #     rev_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/revenue-eps")
+    #     if rev_doc.css('iframe#frmMain').any?
+    #         rev_chart_url = rev_doc.css('iframe#frmMain').first['src'] #gets the page where the chart resides
+    #         rev_chart_doc = get_doc_from(rev_chart_url)
+    #         rev_chart = rev_chart_doc.css("td.body1")
+    #         rev_headers = rev_chart_doc.css("td.body1 b")
+        
+    #         if rev_headers[-2] #if the chart is avaiable for this symbol get rev info
+    #             latest_month = rev_headers[-2].text
+    #             start = 0
+    #             rev_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
+    #             rev_info = rev_chart[start..-1] #contains all the relavent information rev_info 0-1 contains headers then 2-4 contains the info revenue from the last 3 years
+                
+    #             #get dividends
+    #             dividends = rev_info[23].text
+                
+    #             if dividends.to_f.zero? #if info for the latest month is missing, instead of using totals, use previous month
+                    
+    #                 #get dividends
+    #                 dividends = rev_info[10].text
+                    
+    #             end
+    #         else
+    #             dividends = "N/A"
+    #         end
+    #     else
+    #         dividends = "N/A"
+    #     end
+    #     {dividends: dividends}
+    # end
     
     def get_roe
         roe_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/financials?query=ratios")
