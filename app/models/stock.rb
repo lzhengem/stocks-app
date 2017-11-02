@@ -205,15 +205,7 @@ class Stock < ActiveRecord::Base
             analyst_rec = "N/A" #if the chart isnot found, then 'N/A'
         end
         
-        if analyst_rec == "N/A"
-            analyst_rec_score = "N/A"
-        elsif analyst_rec == "Buy"
-            analyst_rec_score = "Pass"
-        else
-            analyst_rec_score = "Fail"
-
-        end
-        {analyst_rec: analyst_rec, analyst_rec_score: analyst_rec_score}
+        analyst_rec
     end
     
     def get_surprise
