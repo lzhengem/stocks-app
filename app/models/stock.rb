@@ -208,26 +208,36 @@ class Stock < ActiveRecord::Base
         analyst_rec
     end
     
-    def get_surprise
+    def get_surprise(quarters_ago=0)
+        raise_exception_if_not_0_to_2(quarters_ago)
         surprises_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/earnings-surprise")
         if surprises_doc.css("div.genTable td").any? and surprises_doc.css("div.genTable td").count > 11
             surprises_chart = surprises_doc.css("div.genTable td")
-            surprises_curr_quarter = surprises_chart[-1].text.to_f
-            surprises_last_quarter = surprises_chart[-6].text.to_f
-            surprises_last_2_quarter = surprises_chart[-11].text.to_f
-        else
-            surprises_curr_quarter = surprises_last_quarter = surprises_last_2_quarter = 0
+            # current quarter at index -1, 1 quater ago at -6, 2 quaurters ago at -11
+            return_surprises = surprises_chart[-1 - quarters_ago*5].text.to_f 
         end
-        
-        if surprises_curr_quarter.zero?
-            surprises_score = "N/A"
-        elsif surprises_curr_quarter > 0 and surprises_last_quarter > 0 and surprises_last_2_quarter > 0
-            surprises_score = "Pass"
-        else
-            surprises_score = "Fail"
-        end
-        {surprises_curr_quarter: surprises_curr_quarter, surprises_last_quarter: surprises_last_quarter, surprises_last_2_quarter: surprises_last_2_quarter, surprises_score: surprises_score}
+        return_surprises
     end
+    # def get_surprise
+    #     surprises_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/earnings-surprise")
+    #     if surprises_doc.css("div.genTable td").any? and surprises_doc.css("div.genTable td").count > 11
+    #         surprises_chart = surprises_doc.css("div.genTable td")
+    #         surprises_curr_quarter = surprises_chart[-1].text.to_f
+    #         surprises_last_quarter = surprises_chart[-6].text.to_f
+    #         surprises_last_2_quarter = surprises_chart[-11].text.to_f
+    #     else
+    #         surprises_curr_quarter = surprises_last_quarter = surprises_last_2_quarter = 0
+    #     end
+        
+    #     if surprises_curr_quarter.zero?
+    #         surprises_score = "N/A"
+    #     elsif surprises_curr_quarter > 0 and surprises_last_quarter > 0 and surprises_last_2_quarter > 0
+    #         surprises_score = "Pass"
+    #     else
+    #         surprises_score = "Fail"
+    #     end
+    #     {surprises_curr_quarter: surprises_curr_quarter, surprises_last_quarter: surprises_last_quarter, surprises_last_2_quarter: surprises_last_2_quarter, surprises_score: surprises_score}
+    # end
     
     def get_forecast
         #get earnings forecast
