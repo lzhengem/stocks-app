@@ -51,8 +51,9 @@ tickers = []
     end
 end
 # if stopped in the middle, just reuse the next and continue
-start =94
-new_ticker =tickers[start..start+50]
+start =144
+# new_ticker =tickers[start..start+50]
+new_ticker =tickers[start..-1]
 new_ticker.each_with_index do |ticker, index|
     puts "working on #{ticker}, index #{index + start}"
     if stock = Stock.find_by(name: ticker.downcase)
