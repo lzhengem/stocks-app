@@ -43,7 +43,7 @@ else
 end
 tickers = []
 # (1..last_page).each do |page|
-(1..1).each do |page|
+(2..2).each do |page|
     doc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}&pagesize=200&page=#{page}"
     doc.css('h3').map do |link|
         ticker = link.content.strip.upcase
@@ -51,9 +51,10 @@ tickers = []
     end
 end
 # if stopped in the middle, just reuse the next and continue
-start =144
+start =0
 # new_ticker =tickers[start..start+50]
-new_ticker =tickers[start..-1]
+# new_ticker =tickers[start..-1]
+new_ticker = tickers
 new_ticker.each_with_index do |ticker, index|
     puts "working on #{ticker}, index #{index + start}"
     if stock = Stock.find_by(name: ticker.downcase)
