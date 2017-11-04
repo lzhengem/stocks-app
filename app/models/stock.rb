@@ -61,12 +61,14 @@ class Stock < ActiveRecord::Base
             rev_headers = rev_chart_doc.css("td.body1 b")
             
             #check which is the latest month with data
-            latest_month = rev_headers[-3].text
-            rev_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
-            rev_info = rev_chart[start..-1]
-
-            #latest month rev info is at 2, 1 year ago at index 3, 2 years ago at index 4
-            return_rev = (rev_info[2 + years_ago]) ? rev_info[2 + years_ago].text.scan(/[\w+]/).join.get_full_number : 0
+            if rev_headers[-3]
+                latest_month = rev_headers[-3].text
+                rev_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
+                rev_info = rev_chart[start..-1]
+    
+                #latest month rev info is at 2, 1 year ago at index 3, 2 years ago at index 4
+                return_rev = (rev_info[2 + years_ago]) ? rev_info[2 + years_ago].text.scan(/[\w+]/).join.get_full_number : 0
+            end
         end
         return_rev.to_f
     end
@@ -123,13 +125,14 @@ class Stock < ActiveRecord::Base
             eps_headers = eps_chart_doc.css("td.body1 b") 
             start = 0
             
-            
-            latest_month = eps_headers[-3].text
-            eps_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
-            eps_info = eps_chart[start..-1]
-
-            #eps latest month this year is at index 6, last year at 7, 2 years ago at 8
-            return_eps = (eps_info[6 + years_ago]) ? eps_info[6 + years_ago].text.to_f : 0
+            if eps_headers[-3]
+                latest_month = eps_headers[-3].text
+                eps_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
+                eps_info = eps_chart[start..-1]
+    
+                #eps latest month this year is at index 6, last year at 7, 2 years ago at 8
+                return_eps = (eps_info[6 + years_ago]) ? eps_info[6 + years_ago].text.to_f : 0
+            end
         end
         return_eps.to_f
     end
@@ -297,11 +300,11 @@ class Stock < ActiveRecord::Base
     
     def get_short_interest
         # short interest - only avaiable for nasdaq-listed companies, for other companies, check NYSE website
-        # short_interest = -1 #if short_interest is negative, that means it wasn't found
+        short_interest = -1 #if short_interest is negative, that means it wasn't found
         short_interest_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/short-interest")
         if short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td").any?
             short_interest_chart = short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td")
-            short_interest = (short_interest_chart[3]) ? short_interest_chart[3].text.to_f : -1
+            short_interest = short_interest_chart[3].text.to_f if (short_interest_chart[3])
         end
         short_interest #if short interest is less than 2 days, then it is good
     end
@@ -322,7 +325,8 @@ class Stock < ActiveRecord::Base
         
         # get revs for this year, last year, and the year before
         # get_total_rev is zero, then use get_total_rev. if get_total_rev is empty, then use get_latest_month_rev
-        
+        ##############################################################################################################
+        # need to update this - total rev sometimes is avilable but not complete, so stock will fail if using total_rec. look at amzn for example
         if !get_total_rev.zero?
             rev_curr_year = get_total_rev
             rev_last_year = get_total_rev(1)
@@ -382,7 +386,7 @@ class Stock < ActiveRecord::Base
         # get growth
         earnings_growth = get_growth
         
-        # if earnings growth is > 8%, then it PASSes, if no data, then NA
+        # if earnings growth is > 8% at long term 5 year, then it PASSes, if no data, then NA
         earnings_growth_score = (earnings_growth.to_i > 8) ? PASS : FAIL
         earnings_growth_score =NA if earnings_growth.nil?
         
