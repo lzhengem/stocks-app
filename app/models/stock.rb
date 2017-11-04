@@ -85,6 +85,29 @@ class Stock < ActiveRecord::Base
         rev_score
     end
     
+    def missing_info_for?(rev_or_eps)
+        #get the revenue-eps page
+        rev_or_eps_index = -24 if rev_or_eps == "rev" #latest month's rev info is at index -24
+        rev_or_eps_index = -20 if rev_or_eps == "eps" #latest month's eps info is at index -20
+        
+        rev_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/revenue-eps")
+        if rev_doc.css('iframe#frmMain').any?
+                rev_chart_url = rev_doc.css('iframe#frmMain').first['src'] #gets the page where the chart resides
+                rev_chart_doc = get_doc_from(rev_chart_url)
+                rev_chart = rev_chart_doc.css("td.body1")
+                rev_headers = rev_chart_doc.css("td.body1 b")
+            
+                if rev_headers[-2] #if the chart is avaiable for this symbol get rev info
+                    latest_month = rev_headers[-2].text
+                    start = 0
+                    rev_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)}
+                    # rev_chart[-24] contains the rev from the latest month
+                    rev_info = rev_chart[rev_or_eps_index].text
+                end
+        end
+        rev_info.blank?
+    end
+    
     # need to work on getting eps score
     def get_total_eps(years_ago = 0)
         #if it gives a number other than 0,1,2 there is no data for that set
@@ -327,7 +350,7 @@ class Stock < ActiveRecord::Base
         # get_total_rev is zero, then use get_total_rev. if get_total_rev is empty, then use get_latest_month_rev
         ##############################################################################################################
         # need to update this - total rev sometimes is avilable but not complete, so stock will fail if using total_rec. look at amzn for example
-        if !get_total_rev.zero?
+        if !get_total_rev.zero? and !missing_info_for?('rev')
             rev_curr_year = get_total_rev
             rev_last_year = get_total_rev(1)
             rev_last_2_year = get_total_rev(2)
@@ -343,7 +366,7 @@ class Stock < ActiveRecord::Base
         
         # get eps for this year, last year, and the year before
         # get_total_eps is zero, then use get_total_eps. if get_total_eps is empty, then use get_latest_month_eps
-        if !get_total_eps.zero?
+        if !get_total_eps.zero? and !missing_info_for?('eps')
             eps_curr_year = get_total_eps
             eps_last_year = get_total_eps(1)
             eps_last_2_year = get_total_eps(2)
