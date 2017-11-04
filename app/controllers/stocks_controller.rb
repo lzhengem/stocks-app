@@ -11,7 +11,7 @@ class StocksController < ApplicationController
         #                         surprises_score != ? and earnings_growth_score != ? and short_interest_score !=? and insider_trading_score != ?",
         #                         "N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A").order("pass_count DESC, price ASC").paginate(page: params[:page], per_page: 100)
         
-        @stocks =  Stock.order("pass_count DESC, price ASC").paginate(page: params[:page], per_page: 100) #sort by how many passes they have
+        @stocks =  Stock.order("pass_count DESC, price ASC").paginate(page: params[:page], per_page: 50) #sort by how many passes they have
 
     end
     

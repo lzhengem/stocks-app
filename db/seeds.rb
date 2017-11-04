@@ -42,24 +42,26 @@ else
     last_page = 1
 end
 tickers = []
-(1..last_page).each do |page|
+# (1..last_page).each do |page|
+(1..1).each do |page|
     doc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}&pagesize=200&page=#{page}"
     doc.css('h3').map do |link|
         ticker = link.content.strip.upcase
         tickers << ticker
     end
 end
-start = 109
-start = start + 20
+# if stopped in the middle, just reuse the next and continue
+start = 74
 new_ticker =tickers[start..start+20]
-new_ticker.each do |ticker|
-    if stock = Stock.find_by(name: ticker)
+new_ticker.each_with_index do |ticker, index|
+    puts "working on #{ticker}, index #{index + start}"
+    if stock = Stock.find_by(name: ticker.downcase)
         stock.destroy
     end
-    new_stock = Stock.new(name: ticker)
+    new_stock = Stock.new(name: ticker.downcase)
     new_stock.update
 end
-tickers.index "AEZS"
+# tickers.index "AEZS"
 
 
 
