@@ -321,38 +321,95 @@ class Stock < ActiveRecord::Base
     end
     
     def update
-        # values = get_price.merge(get_rev).merge(get_eps).merge(get_dividends).merge(get_roe).merge(get_rec).merge(get_surprise).merge(get_forecast).merge(get_growth).merge(get_short_interest).merge(get_insider)
+        
+        
+        # get revs for this year, last year, and the year before
+        # get_total_rev is zero, then use get_total_rev. if get_total_rev is empty, then use get_latest_month_rev
+        if !get_total_rev.zero?
+            rev_curr_year = get_total_rev
+            rev_last_year = get_total_rev(1)
+            rev_last_2_year = get_total_rev(2)
+        else
+            rev_curr_year = get_latest_month_rev
+            rev_last_year = get_latest_month_rev(1)
+            rev_last_2_year = get_latest_month_rev(2)
+        end
+        
+        # get eps for this year, last year, and the year before
+        # get_total_eps is zero, then use get_total_eps. if get_total_eps is empty, then use get_latest_month_eps
+        if !get_total_eps.zero?
+            eps_curr_year = get_total_eps
+            eps_last_year = get_total_eps(1)
+            eps_last_2_year = get_total_eps(2)
+        else
+            eps_curr_year = get_latest_month_eps
+            eps_last_year = get_latest_month_eps(1)
+            eps_last_2_year = get_latest_month_eps(2)
+        end
+        
+        # get the total dividens for this year so far
+        dividends = get_total_dividends
+        
+        # get roe for this year, last year, and the year before
+        roe_curr_year = get_roe
+        roe_last_year = get_roe(1)
+        roe_last_2_year = get_roe(2)
+        
+        # get recomendation
+        analyst_rec = get_rec
+        
+        # get surprises
+        surprises_curr_quarter = get_surprise
+        surprises_last_quarter = get_surprise(1)
+        surprises_last_2_quarter = get_surprise(2)
+        
+        # get growth
+        earnings_growth = get_growth
+        
+        # get short interest
+        short_interest = get_short_interest
+        
+        # get insider trading
+        insider_trading = get_insider
+        
+        # get forcast
+        forecast_year_0 = get_forecast
+        forecast_year_1 = get_forecast(1),
+        forecast_year_2 = get_forecast(2),
+        forecast_year_3 = get_forecast(3)
+        
+        
         values = {
                             price: get_price, 
-                            rev_curr_year: get_total_rev,
-                            rev_last_year: get_total_rev(1),
-                            rev_last_2_year: get_total_rev(2),
-                            rev_score: get_rev_score, #need to add the scores to the model
-                            eps_curr_year: get_total_eps,
-                            eps_last_year: get_total_eps(1),
-                            eps_last_2_year: get_total_eps(2),
-                            eps_score: get_eps_score,
-                            dividends: get_total_dividends,
-                            roe_curr_year: get_roe,
-                            roe_last_year: get_roe(1),
-                            roe_last_2_year: get_roe(2),
-                            roe_score: get_roe_score,
-                            analyst_rec: get_rec,
-                            analyst_rec_score: get_rec_score,
-                            surprises_curr_quarter: get_surprise,
-                            surprises_last_quarter: get_surprise(1),
-                            surprises_last_2_quarter: get_surprise(2),
+                            rev_curr_year: rev_curr_year,
+                            rev_last_year: rev_last_year,
+                            rev_last_2_year: rev_last_2_year,
+                            # rev_score: get_rev_score, #need to add the scores to the model
+                            eps_curr_year: eps_curr_year,
+                            eps_last_year: eps_last_year(1),
+                            eps_last_2_year: eps_last_2_year(2),
+                            # eps_score: get_eps_score,
+                            dividends: dividends,
+                            roe_curr_year: roe_curr_year,
+                            roe_last_year: roe_last_year,
+                            roe_last_2_year: roe_last_2_year,
+                            # roe_score: get_roe_score,
+                            analyst_rec: analyst_rec,
+                            # analyst_rec_score: get_rec_score,
+                            surprises_curr_quarter: surprises_curr_quarter,
+                            surprises_last_quarter: surprises_last_quarter,
+                            surprises_last_2_quarter: surprises_last_2_quarter,
                             # surprises_score: surprises_score,
-                            earnings_growth: get_growth,
+                            earnings_growth: earnings_growth,
                             # earnings_growth_score: earnings_growth_score,
-                            short_interest: get_short_interest,
+                            short_interest: short_interest,
                             # short_interest_score: short_interest_score,
-                            insider_trading: get_insider,
+                            insider_trading: insider_trading,
                             # insider_trading_score: insider_trading_score,
-                            forecast_year_0: get_forecast,
-                            forecast_year_1: get_forecast(1),
-                            forecast_year_2: get_forecast(2),
-                            forecast_year_3: get_forecast(3)
+                            forecast_year_0: forecast_year_0,
+                            forecast_year_1: forecast_year_1,
+                            forecast_year_2: forecast_year_2,
+                            forecast_year_3: forecast_year_3
                             #,
                             # forecast_score: forecast_score,
         }
