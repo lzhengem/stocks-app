@@ -2,6 +2,10 @@ include ApplicationHelper
 
 # uses the metrics found in http://www.nasdaq.com/investing/dozen/weighted-alpha.aspx
 class Stock < ActiveRecord::Base
+    PASS = "PASS" #set up PASS and FAIL constants
+    FAIL = "FAIL"
+    NA = "NA"
+    
     def get_price
         ticker_doc = get_doc_from "http://www.nasdaq.com/symbol/#{name}"
         price = ticker_doc.css("div#qwidget_lastsale.qwidget-dollar").text.tr('$','').to_f
@@ -70,11 +74,11 @@ class Stock < ActiveRecord::Base
     def get_rev_score
         # check if total rev is increasing
         if get_total_rev != 0
-            # if the revenue of current year is greater than last year, and last year was greater than 2 years ago, then "Pass"
-            rev_score = (get_total_rev > get_total_rev(1) and get_total_rev(1) > get_total_rev(2)) ? "Pass" : "Fail"
+            # if the revenue of current year is greater than last year, and last year was greater than 2 years ago, then PASS
+            rev_score = (get_total_rev > get_total_rev(1) and get_total_rev(1) > get_total_rev(2)) ? PASS : FAIL
         else
         # if total rev data is not available, use last month's rev data
-            rev_score = (get_latest_month_rev > get_latest_month_rev(1) and get_latest_month_rev(1)> get_latest_month_rev(2)) ? "Pass": "Fail"
+            rev_score = (get_latest_month_rev > get_latest_month_rev(1) and get_latest_month_rev(1)> get_latest_month_rev(2)) ? PASS: FAIL
         end
         rev_score
     end
@@ -130,15 +134,15 @@ class Stock < ActiveRecord::Base
         return_eps.to_f
     end
 
-    # if the eps has been increasing from year to year, then it is a "Pass"
+    # if the eps has been increasing from year to year, then it is a PASS
     def get_eps_score
         # check if total eps is increasing
         if get_total_eps != 0
-            # if the eps of current year is greater than last year, and last year was greater than 2 years ago, then "Pass"
-            eps_score = (get_total_eps > get_total_eps(1) and get_total_eps(1) > get_total_eps(2)) ? "Pass" : "Fail"
+            # if the eps of current year is greater than last year, and last year was greater than 2 years ago, then PASS
+            eps_score = (get_total_eps > get_total_eps(1) and get_total_eps(1) > get_total_eps(2)) ? PASS : FAIL
         else
         # if total eps data is not available, use last month's eps data
-            eps_score = (get_latest_month_eps > get_latest_month_eps(1) and get_latest_month_eps(1)> get_latest_month_eps(2)) ? "Pass": "Fail"
+            eps_score = (get_latest_month_eps > get_latest_month_eps(1) and get_latest_month_eps(1)> get_latest_month_eps(2)) ? PASS: FAIL
         end
         eps_score
     end
@@ -200,15 +204,15 @@ class Stock < ActiveRecord::Base
         return_roe.to_i
     end
 
-    # if the roe has been increasing for two consecutive years, then it is a "Pass"
+    # if the roe has been increasing for two consecutive years, then it is a PASS
     def get_roe_score
         # check if total roe is increasing
         if get_roe != 0
-            # if the roe of current year is greater than last year, and last year was greater than 2 years ago, then "Pass"
-            roe_score = (get_roe > get_roe(1) and get_roe(1) > get_roe(2)) ? "Pass" : "Fail"
+            # if the roe of current year is greater than last year, and last year was greater than 2 years ago, then PASS
+            roe_score = (get_roe > get_roe(1) and get_roe(1) > get_roe(2)) ? PASS : FAIL
         else
         # if total roe data is not available, use last month's roe data
-            roe_score = (get_roe > get_roe(1) and get_roe(1)> get_roe(2)) ? "Pass": "Fail"
+            roe_score = (get_roe > get_roe(1) and get_roe(1)> get_roe(2)) ? PASS: FAIL
         end
         roe_score
     end
@@ -251,7 +255,7 @@ class Stock < ActiveRecord::Base
     # if the rec is "Buy" then it is a "Pasas"
     def get_rec_score
         # check if get_rec is a buy
-        rec_score = (get_rec == "Buy") ? "Pass" : "Fail"
+        rec_score = (get_rec == "Buy") ? PASS : FAIL
         rec_score
     end
     
@@ -288,14 +292,7 @@ class Stock < ActiveRecord::Base
         earnings_growth_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/earnings-growth")
         earnings_growth_digit = earnings_growth_doc.css("span#quotes_content_left_textinfo").text.scan(/\d+/).first
         earnings_growth_digit.nil? ? earnings_growth = nil : earnings_growth = earnings_growth_digit.to_f #it is the first digit in the paragraph
-        if earnings_growth.nil?
-            earnings_growth_score = "N/A"
-        elsif earnings_growth > 0
-            earnings_growth_score = "Pass"
-        else
-            earnings_growth_score = "Fail"
-        end
-        earnings_growth_score
+        earnings_growth_digit
     end
     
     def get_short_interest
@@ -325,6 +322,7 @@ class Stock < ActiveRecord::Base
         
         # get revs for this year, last year, and the year before
         # get_total_rev is zero, then use get_total_rev. if get_total_rev is empty, then use get_latest_month_rev
+        
         if !get_total_rev.zero?
             rev_curr_year = get_total_rev
             rev_last_year = get_total_rev(1)
@@ -334,6 +332,10 @@ class Stock < ActiveRecord::Base
             rev_last_year = get_latest_month_rev(1)
             rev_last_2_year = get_latest_month_rev(2)
         end
+        
+        # If rev score has been increasing year to year, PASS, if not, FAIL, if no data, then 'NA'
+        rev_score = (rev_curr_year > rev_last_year && rev_last_year > rev_last_2_year) ? PASS : FAIL
+        rev_score = NA if (rev_curr_year.zero? && rev_last_year.zero? && rev_last_2_year.zero?)
         
         # get eps for this year, last year, and the year before
         # get_total_eps is zero, then use get_total_eps. if get_total_eps is empty, then use get_latest_month_eps
@@ -346,6 +348,10 @@ class Stock < ActiveRecord::Base
             eps_last_year = get_latest_month_eps(1)
             eps_last_2_year = get_latest_month_eps(2)
         end
+
+        # If eps score has been increasing year to year, PASS, if not, FAIL, if no data, then 'NA'
+        eps_score = (eps_curr_year > eps_last_year && eps_last_year > eps_last_2_year) ? PASS : FAIL
+        eps_score = NA if (eps_curr_year.zero? && eps_last_year.zero? && eps_last_2_year.zero?)        
         
         # get the total dividens for this year so far
         dividends = get_total_dividends
@@ -355,72 +361,96 @@ class Stock < ActiveRecord::Base
         roe_last_year = get_roe(1)
         roe_last_2_year = get_roe(2)
         
+        # If roe has been increasing year to year, PASS, if not, FAIL, if no data, then 'NA'
+        roe_score = (roe_curr_year > roe_last_year && roe_last_year > roe_last_2_year) ? PASS : FAIL
+        roe_score = NA if (roe_curr_year.zero? && roe_last_year.zero? && roe_last_2_year.zero?)  
+        
         # get recomendation
         analyst_rec = get_rec
+        analyst_rec_score = (analyst_rec == "Buy") ? PASS : FAIL
         
         # get surprises
         surprises_curr_quarter = get_surprise
         surprises_last_quarter = get_surprise(1)
         surprises_last_2_quarter = get_surprise(2)
         
+        # if all surprises were positive, then PASS, if not, FAIL, if no data, then NA
+        surprises_score = (surprises_curr_quarter >0&& surprises_last_quarter>0&& surprises_last_2_quarter>0) ? PASS : FAIL
+        surprises_score = NA if (surprises_curr_quarter.zero? && surprises_last_quarter.zero? && surprises_last_2_quarter.zero?) 
+        
         # get growth
         earnings_growth = get_growth
+        
+        # if earnings growth is > 8%, then it PASSes, if no data, then NA
+        earnings_growth_score = (earnings_growth.to_i > 8) ? PASS : FAIL
+        earnings_growth_score =NA if earnings_growth.nil?
         
         # get short interest
         short_interest = get_short_interest
         
+        # if short interest is less than 2, then PASS, if not, FAIL, if not found, then NA
+        short_interest_score = (short_interest < 2) ? PASS : FAIL
+        short_interest_score = NA if (short_interest_score == -1)
+        
         # get insider trading
         insider_trading = get_insider
         
-        # get forcast
-        forecast_year_0 = get_forecast
-        forecast_year_1 = get_forecast(1),
-        forecast_year_2 = get_forecast(2),
-        forecast_year_3 = get_forecast(3)
+        # if insider trading is posivitive, then PASS, if negative, FAIL. if no data, then NA
+        insider_trading_score = (insider_trading > 0) ? PASS : FAIL
+        insider_trading_score =NA if (insider_trading.zero?)
         
+        
+        # get forecast
+        forecast_year_0 = get_forecast
+        forecast_year_1 = get_forecast(1)
+        forecast_year_2 = get_forecast(2)
+        # forecast_year_3 = get_forecast(3)
+        
+        # if forecast has been increasing then pass, else fail, if no data, then a
+        forecast_score = (forecast_year_0 > forecast_year_1 && forecast_year_1 > forecast_year_2) ? PASS : FAIL
+        forecast_score = NA if (forecast_year_0.zero? && forecast_year_1.zero? && forecast_year_2.zero?) 
         
         values = {
                             price: get_price, 
                             rev_curr_year: rev_curr_year,
                             rev_last_year: rev_last_year,
                             rev_last_2_year: rev_last_2_year,
-                            # rev_score: get_rev_score, #need to add the scores to the model
+                            rev_score: rev_score, #need to add the scores to the model
                             eps_curr_year: eps_curr_year,
-                            eps_last_year: eps_last_year(1),
-                            eps_last_2_year: eps_last_2_year(2),
-                            # eps_score: get_eps_score,
+                            eps_last_year: eps_last_year,
+                            eps_last_2_year: eps_last_2_year,
+                            eps_score: eps_score,
                             dividends: dividends,
                             roe_curr_year: roe_curr_year,
                             roe_last_year: roe_last_year,
                             roe_last_2_year: roe_last_2_year,
-                            # roe_score: get_roe_score,
+                            roe_score: roe_score,
                             analyst_rec: analyst_rec,
-                            # analyst_rec_score: get_rec_score,
+                            analyst_rec_score: analyst_rec_score,
                             surprises_curr_quarter: surprises_curr_quarter,
                             surprises_last_quarter: surprises_last_quarter,
                             surprises_last_2_quarter: surprises_last_2_quarter,
-                            # surprises_score: surprises_score,
+                            surprises_score: surprises_score,
                             earnings_growth: earnings_growth,
-                            # earnings_growth_score: earnings_growth_score,
+                            earnings_growth_score: earnings_growth_score,
                             short_interest: short_interest,
-                            # short_interest_score: short_interest_score,
+                            short_interest_score: short_interest_score,
                             insider_trading: insider_trading,
-                            # insider_trading_score: insider_trading_score,
+                            insider_trading_score: insider_trading_score,
                             forecast_year_0: forecast_year_0,
                             forecast_year_1: forecast_year_1,
                             forecast_year_2: forecast_year_2,
-                            forecast_year_3: forecast_year_3
-                            #,
-                            # forecast_score: forecast_score,
+                            forecast_year_3: forecast_year_3,
+                            forecast_score: forecast_score,
         }
             
         update_attributes(values)
         pass_count = 0
         fail_count =0
-        attributes.keys.select{|a| a.include?('score')}.each do |score| #count all the scores for fail/pass
-            if self[score] == "Pass"
+        attributes.keys.select{|a| a.include?('score')}.each do |score| #count all the scores for FAIL/PASS
+            if self[score] == PASS
                 pass_count += 1
-            elsif self[score] == "Fail"
+            elsif self[score] == FAIL
                 fail_count += 1
             end
         end
