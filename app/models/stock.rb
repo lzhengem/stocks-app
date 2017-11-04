@@ -41,7 +41,7 @@ class Stock < ActiveRecord::Base
                     #if there is info in the latest month, then we can use totals to calculate rev and eps
 
                     #current year rev is at 15, last year's rev is at 16, 2 year's ago rev is at 17
-                    return_rev = rev_info[15 + years_ago].text.scan(/[\w+]/).join.get_full_number
+                    return_rev = (rev_info[15 + years_ago]) ? rev_info[15 + years_ago].text.scan(/[\w+]/).join.get_full_number : 0
                 end
         end
         return_rev.to_f
@@ -66,7 +66,7 @@ class Stock < ActiveRecord::Base
             rev_info = rev_chart[start..-1]
 
             #latest month rev info is at 2, 1 year ago at index 3, 2 years ago at index 4
-            return_rev = rev_info[2 + years_ago].text.scan(/[\w+]/).join.get_full_number
+            return_rev = (rev_info[2 + years_ago]) ? rev_info[2 + years_ago].text.scan(/[\w+]/).join.get_full_number : 0
         end
         return_rev.to_f
     end
@@ -103,7 +103,7 @@ class Stock < ActiveRecord::Base
                 eps_chart.each_with_index{|node, index| start = index if node.text.include?(latest_month)} #looping through the December (FYE) info
                 eps_info = eps_chart[start..-1]
                 #eps this year is at index 19, last year at 20, 2 years ago at 21
-                return_eps = eps_info[19 + years_ago].text.to_f
+                return_eps = (eps_info[19 + years_ago]) ? eps_info[19 + years_ago].text.to_f : 0
             end
         end
         return_eps.to_f
@@ -129,7 +129,7 @@ class Stock < ActiveRecord::Base
             eps_info = eps_chart[start..-1]
 
             #eps latest month this year is at index 6, last year at 7, 2 years ago at 8
-            return_eps = eps_info[6 + years_ago].text.to_f
+            return_eps = (eps_info[6 + years_ago]) ? eps_info[6 + years_ago].text.to_f : 0
         end
         return_eps.to_f
     end
@@ -200,7 +200,7 @@ class Stock < ActiveRecord::Base
             # roe_last_year = roe_info[-3].text.to_f
             # roe_last_2_year = roe_info[-2].text.to_f
             # roe for current year is at -4, last year at -3, 2 years ago at -2
-            return_roe = roe_info[-4 + years_ago].text.to_f
+            return_roe = (roe_info[-4 + years_ago]) ? roe_info[-4 + years_ago].text.to_f : 0
         return_roe.to_i
     end
 
@@ -218,6 +218,7 @@ class Stock < ActiveRecord::Base
     end
     
     def get_rec
+        analyst_rec = NA
         rec_url = URI.parse(URI.escape("http://www.nasdaq.com/charts/#{name}_rm.jpeg"))
         rec_req = Net::HTTP.new(rec_url.host, rec_url.port) #sometimes this chart is not avaiable, so check to see if its there
         rec_res = rec_req.request_head(rec_url.path)
@@ -239,16 +240,13 @@ class Stock < ActiveRecord::Base
             end
             
             if analyst_x_coordinate == 0 #if the bar is not found, then give 'N/A'
-                analyst_rec = "N/A"
+                analyst_rec = NA
             elsif analyst_x_coordinate > buy_x_coordinate #if the bar is in the 'Buy' zone, then Buy
                 analyst_rec = "Buy"
             else
                 analyst_rec = "Sell" #if the bar is not in the 'Buy' zone, then sell
             end
-        else
-            analyst_rec = "N/A" #if the chart isnot found, then 'N/A'
         end
-        
         analyst_rec
     end
     
@@ -265,7 +263,9 @@ class Stock < ActiveRecord::Base
         if surprises_doc.css("div.genTable td").any? and surprises_doc.css("div.genTable td").count > 11
             surprises_chart = surprises_doc.css("div.genTable td")
             # current quarter at index -1, 1 quater ago at -6, 2 quaurters ago at -11
-            return_surprises = surprises_chart[-1 - quarters_ago*5].text.to_f 
+            return_surprises = surprises_chart[-1 - quarters_ago*5].text.to_f
+        else
+            return_surprises = 0
         end
         return_surprises
     end
@@ -280,7 +280,7 @@ class Stock < ActiveRecord::Base
         chart = forecast_doc.css("div.genTable").first
         
         if chart.css("td") #the information is stored here in the intervals 1,8,15... (x7 + 1)
-            return_forecast = chart.css("td")[7 * year + 1].text.to_f
+            return_forecast = (chart.css("td")[7 * year + 1]) ? chart.css("td")[7 * year + 1].text.to_f : 0
             # end
         end
         return_forecast
@@ -297,11 +297,11 @@ class Stock < ActiveRecord::Base
     
     def get_short_interest
         # short interest - only avaiable for nasdaq-listed companies, for other companies, check NYSE website
-        short_interest = -1 #if short_interest is negative, that means it wasn't found
+        # short_interest = -1 #if short_interest is negative, that means it wasn't found
         short_interest_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/short-interest")
         if short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td").any?
             short_interest_chart = short_interest_doc.css("table#quotes_content_left_ShortInterest1_ShortInterestGrid td")
-            short_interest = short_interest_chart[3].text.to_f
+            short_interest = (short_interest_chart[3]) ? short_interest_chart[3].text.to_f : -1
         end
         short_interest #if short interest is less than 2 days, then it is good
     end
@@ -351,7 +351,7 @@ class Stock < ActiveRecord::Base
 
         # If eps score has been increasing year to year, PASS, if not, FAIL, if no data, then 'NA'
         eps_score = (eps_curr_year > eps_last_year && eps_last_year > eps_last_2_year) ? PASS : FAIL
-        eps_score = NA if (eps_curr_year.zero? && eps_last_year.zero? && eps_last_2_year.zero?)        
+        eps_score = NA if (eps_curr_year.zero? || eps_last_year.zero? || eps_last_2_year.zero?)        
         
         # get the total dividens for this year so far
         dividends = get_total_dividends
@@ -363,11 +363,12 @@ class Stock < ActiveRecord::Base
         
         # If roe has been increasing year to year, PASS, if not, FAIL, if no data, then 'NA'
         roe_score = (roe_curr_year > roe_last_year && roe_last_year > roe_last_2_year) ? PASS : FAIL
-        roe_score = NA if (roe_curr_year.zero? && roe_last_year.zero? && roe_last_2_year.zero?)  
+        roe_score = NA if (roe_curr_year.zero? || roe_last_year.zero? || roe_last_2_year.zero?)  
         
         # get recomendation
         analyst_rec = get_rec
         analyst_rec_score = (analyst_rec == "Buy") ? PASS : FAIL
+        analyst_rec_score = analyst_rec if analyst_rec == NA
         
         # get surprises
         surprises_curr_quarter = get_surprise
@@ -375,8 +376,8 @@ class Stock < ActiveRecord::Base
         surprises_last_2_quarter = get_surprise(2)
         
         # if all surprises were positive, then PASS, if not, FAIL, if no data, then NA
-        surprises_score = (surprises_curr_quarter >0&& surprises_last_quarter>0&& surprises_last_2_quarter>0) ? PASS : FAIL
-        surprises_score = NA if (surprises_curr_quarter.zero? && surprises_last_quarter.zero? && surprises_last_2_quarter.zero?) 
+        surprises_score = (surprises_curr_quarter >0 && surprises_last_quarter>0 && surprises_last_2_quarter>0) ? PASS : FAIL
+        surprises_score = NA if (surprises_curr_quarter.zero? || surprises_last_quarter.zero? || surprises_last_2_quarter.zero?) 
         
         # get growth
         earnings_growth = get_growth
@@ -408,7 +409,7 @@ class Stock < ActiveRecord::Base
         
         # if forecast has been increasing then pass, else fail, if no data, then a
         forecast_score = (forecast_year_0 > forecast_year_1 && forecast_year_1 > forecast_year_2) ? PASS : FAIL
-        forecast_score = NA if (forecast_year_0.zero? && forecast_year_1.zero? && forecast_year_2.zero?) 
+        forecast_score = NA if (forecast_year_0.zero? || forecast_year_1.zero? || forecast_year_2.zero?) 
         
         values = {
                             price: get_price, 

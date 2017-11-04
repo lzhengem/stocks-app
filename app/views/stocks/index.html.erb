@@ -1,5 +1,5 @@
 <h1>Stocks page</h1>
-Last updated: <%= @stocks.first.updated_at.to_date %>
+Last updated: <%= @stock ? @stocks.first.updated_at.to_date : "None"%> <!-- checks to see if @stocks is empty or not first -->
 
 <br>
 Currently Still under construction.
