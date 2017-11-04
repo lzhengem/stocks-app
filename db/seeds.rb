@@ -51,7 +51,7 @@ tickers = []
     end
 end
 # if stopped in the middle, just reuse the next and continue
-start =0
+start =14
 # new_ticker =tickers[start..start+50]
 # new_ticker =tickers[start..-1]
 new_ticker = tickers
