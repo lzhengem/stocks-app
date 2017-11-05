@@ -9,3 +9,5 @@ This project systematically scrapes the information from Nasdaq's website for ea
 compares each stock's attributes to Nasdaq's recomendation, and list the stocks with the highest potential on top.
 
 Currently, only 9 of the criteria are being monitored.
+
+updated  /usr/local/rvm/rubies/ruby-2.3.0/lib/ruby/2.3.0/net/http.rb open_timeout and set it to 600 seconds instead of 60

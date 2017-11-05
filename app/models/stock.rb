@@ -24,6 +24,14 @@ class Stock < ActiveRecord::Base
         
         #get the revenue-eps page
         rev_doc = get_doc_from("http://www.nasdaq.com/symbol/#{name}/revenue-eps")
+        # begin
+        #     doc = Nokogiri::HTML(open(url))
+        #     rescue OpenURI::HTTPError => e
+        #         puts "Can't access #{ url }"
+        #         puts e.message
+        #         puts
+        #     next
+        # end
         return_rev = 0
         if rev_doc.css('iframe#frmMain').any?
                 rev_chart_url = rev_doc.css('iframe#frmMain').first['src'] #gets the page where the chart resides
