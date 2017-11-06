@@ -37,7 +37,7 @@ puts "start time: #{Time.now}"
 # do it page by page
 letter = 'A'
 first_doc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}&pagesize=200"
-if first_doc.css("a#two_column_main_content_lb_LastPage").any?
+if !first_doc.is_a?(String) && first_doc.css("a#two_column_main_content_lb_LastPage").any?
     last_page = first_doc.css("a#two_column_main_content_lb_LastPage").attribute('href').value.scan(/page=(\d+)/)[0][0].to_i
 else
     last_page = 1
@@ -52,7 +52,7 @@ tickers = []
     end
 end
 # if stopped in the middle, just reuse the next and continue
-start =0
+start =65
 # new_ticker =tickers[start..start+50]
 new_ticker =tickers[start..-1]
 # new_ticker = tickers

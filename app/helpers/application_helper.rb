@@ -18,17 +18,22 @@ module ApplicationHelper
         end
     end
     
-    # opens the webpage and reads it into nokogiri
+    # opens the webpage and returns it as nokogiri. if there is an error, returns nil
     def get_doc_from(url)
-        doc = ""        
+        doc = nil
+        # need to rescue if thte connection times out or if the page is not found
         begin
-            doc = Nokogiri.HTML(open(URI.escape(url),:read_timeout => 600, :open_timeout =>600)) #set thereadtimeout to600 so hopefully wont get Net::OpenTimeout: execution expired error again
-        # rescue OpenURI::HTTPError => e
-        rescue ArgumentError => e
+            retries ||= 0 #allow it to try twice before quiting
+            opened_uri = open(URI.escape(url),:read_timeout => 600, :open_timeout =>600)
+            doc = Nokogiri.HTML(opened_uri) #set thereadtimeout to600 so hopefully wont get Net::OpenTimeout: execution expired error again
+            opened_uri.close #close the connection
+        rescue Errno::ETIMEDOUT, OpenURI::HTTPError => e
+            retries +=1
             puts "Can't access #{ url }"
             puts e.message
+            puts "Retry # #{retries}"
             puts
-        # rescue Errno::ETIMEDOUT ?
+            retry if (retries) < 2
         end
         doc
     end
@@ -37,7 +42,7 @@ module ApplicationHelper
         # look at the page for the letter entered, ex: A
         firstdoc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}&pagesize=200"
         # find the last page for letter=A
-        if firstdoc.css("a#two_column_main_content_lb_LastPage").any?
+        if firstdoc && firstdoc.css("a#two_column_main_content_lb_LastPage").any?
             last_page = firstdoc.css("a#two_column_main_content_lb_LastPage").attribute('href').value.scan(/page=(\d+)/)[0][0].to_i
         else
             last_page = 1
@@ -46,10 +51,11 @@ module ApplicationHelper
         tickers = []
         (1..last_page).each do |page|
             doc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}&pagesize=200&page=#{page}"
-            doc.css('h3').map do |link|
-                tickers << link.content.strip.downcase
+            if doc
+                doc.css('h3').map do |link|
+                    tickers << link.content.strip.downcase
+                end
             end
-            
         end
         tickers
     end
