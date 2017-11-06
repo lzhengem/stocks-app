@@ -1,3 +1,4 @@
+include ApplicationHelper
 desc "This task is called by the Heroku scheduler add-on"
 task :update_stocks => :environment do
   puts "starting update_stocks"
