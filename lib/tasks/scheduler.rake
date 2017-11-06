@@ -1,6 +1,8 @@
-include ApplicationHelper
+
 desc "This task is called by the Heroku scheduler add-on"
 task :update_stocks => :environment do
+  # require File.expand_path("../../../app/helpers/application_helper.rb", __FILE__)
+  include ApplicationHelper  
   puts "starting update_stocks"
   letter = 'A'
   first_doc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}&pagesize=200"
@@ -22,7 +24,7 @@ task :update_stocks => :environment do
   end
 
   tickers.each_with_index do |ticker, index|
-      puts "working on #{ticker}, index #{index + start}"
+      puts "working on #{ticker}, index #{index}"
       if stock = Stock.find_by(name: ticker.downcase)
           stock.destroy
       end
