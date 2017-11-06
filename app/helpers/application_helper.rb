@@ -20,7 +20,17 @@ module ApplicationHelper
     
     # opens the webpage and reads it into nokogiri
     def get_doc_from(url)
-        Nokogiri.HTML(open(URI.escape(url),:read_timeout => 600)) #set thereadtimeout to600 so hopefully wont get Net::OpenTimeout: execution expired error again
+        doc = ""        
+        begin
+            doc = Nokogiri.HTML(open(URI.escape(url),:read_timeout => 600, :open_timeout =>600)) #set thereadtimeout to600 so hopefully wont get Net::OpenTimeout: execution expired error again
+        # rescue OpenURI::HTTPError => e
+        rescue ArgumentError => e
+            puts "Can't access #{ url }"
+            puts e.message
+            puts
+        # rescue Errno::ETIMEDOUT ?
+        end
+        doc
     end
     
     def tickers_for_letter(letter)
