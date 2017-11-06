@@ -4,8 +4,8 @@ task :update_stocks => :environment do
   # require File.expand_path("../../../app/helpers/application_helper.rb", __FILE__)
   include ApplicationHelper  
   puts "starting update_stocks"
-  # ('A'..'Z').each do |letter|
-    letter = 'A'
+  ('A'..'Z').each do |letter|
+    # letter = 'A'
     first_doc = get_doc_from "http://www.nasdaq.com/screening/companies-by-name.aspx?letter=#{letter}&pagesize=200"
     if first_doc && first_doc.css("a#two_column_main_content_lb_LastPage").any?
         last_page = first_doc.css("a#two_column_main_content_lb_LastPage").attribute('href').value.scan(/page=(\d+)/)[0][0].to_i
@@ -32,6 +32,6 @@ task :update_stocks => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-  # end
+  end
   puts "end update_stocks"
 end
