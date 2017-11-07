@@ -47,9 +47,10 @@ class StocksController < ApplicationController
         #     new_stock = Stock.new(name: ticker)
         #     new_stock.update
         # end
-        
-        
-        
+    end
+    
+    def letter
+        @stocks =  Stock.where("name like '#{params[:letter]}%'").order(:name).paginate(page: params[:page], per_page: 50) #sort by how many passes they have
     end
         
 end
