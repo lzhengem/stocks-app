@@ -14,7 +14,9 @@ task :update_stocks_A => :environment do
             stock.destroy
         end
         new_stock = Stock.new(name: ticker.downcase)
+        puts "updating #{ticker}"
         new_stock.update
+        puts "finish updating #{ticker}"
     end
     puts "end update_stocks"
 end
