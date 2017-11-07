@@ -1,0 +1,25 @@
+<h1>Letter <%= params[:letter] %> page</h1>
+
+<br><br>
+<table>
+    <tr>
+        <td>Stock Name</td>
+        <td>Price</td>
+        <td>Dividends</td>
+        <td>Revenue Score</td>
+        <td>EPS Score</td>
+        <td>ROE Score</td>
+        <td>Analyst Recommendation</td>
+        <td>Surprises</td>
+        <td>Forecast</td>
+        <td>Earnings Growth</td>
+        <td>Short Interest</td>
+        <td>Insider Trading</td>
+        <td>Passing Scores</td>
+        <td>Updated on</td>
+        <!--<td>Failing Scores</td>-->
+    </tr>
+<%= render @stocks %>
+</table>
+
+<%= will_paginate %>
