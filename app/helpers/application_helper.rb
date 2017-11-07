@@ -27,7 +27,7 @@ module ApplicationHelper
             opened_uri = open(URI.escape(url),:read_timeout => 600, :open_timeout =>600)
             doc = Nokogiri.HTML(opened_uri) #set thereadtimeout to600 so hopefully wont get Net::OpenTimeout: execution expired error again
             opened_uri.close #close the connection
-        rescue Errno::ETIMEDOUT, OpenURI::HTTPError => e
+        rescue Errno::ETIMEDOUT, OpenURI::HTTPError, Net::OpenTimeout => e
             retries +=1
             puts "Can't access #{ url }"
             puts e.message

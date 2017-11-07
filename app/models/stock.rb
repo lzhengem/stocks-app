@@ -287,7 +287,7 @@ class Stock < ActiveRecord::Base
                     analyst_rec = "Sell" #if the bar is not in the 'Buy' zone, then sell
                 end
             end
-        rescue Errno::ETIMEDOUT, OpenURI::HTTPError => e
+        rescue Errno::ETIMEDOUT, OpenURI::HTTPError, Net::OpenTimeout => e
             retries +=1
             puts "Can't access #{ url }"
             puts e.message
