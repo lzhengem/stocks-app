@@ -18,7 +18,7 @@ task :update_stocks_A => :environment do
         new_stock.update
         puts "finish updating #{ticker}"
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_B => :environment do
@@ -36,7 +36,7 @@ task :update_stocks_B => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_C => :environment do
@@ -54,7 +54,7 @@ task :update_stocks_C => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_D => :environment do
@@ -72,7 +72,7 @@ task :update_stocks_D => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_E => :environment do
@@ -90,7 +90,7 @@ task :update_stocks_E => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_F => :environment do
@@ -108,7 +108,7 @@ task :update_stocks_F => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_G => :environment do
@@ -126,7 +126,7 @@ task :update_stocks_G => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_H => :environment do
@@ -144,7 +144,7 @@ task :update_stocks_H => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_I => :environment do
@@ -162,7 +162,7 @@ task :update_stocks_I => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_J => :environment do
@@ -180,7 +180,7 @@ task :update_stocks_J => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_K => :environment do
@@ -198,7 +198,7 @@ task :update_stocks_K => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_L => :environment do
@@ -216,7 +216,7 @@ task :update_stocks_L => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_M => :environment do
@@ -234,7 +234,7 @@ task :update_stocks_M => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_N => :environment do
@@ -252,7 +252,7 @@ task :update_stocks_N => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_O => :environment do
@@ -270,7 +270,7 @@ task :update_stocks_O => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_P => :environment do
@@ -288,7 +288,7 @@ task :update_stocks_P => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_Q => :environment do
@@ -306,7 +306,7 @@ task :update_stocks_Q => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_R => :environment do
@@ -324,7 +324,7 @@ task :update_stocks_R => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_S => :environment do
@@ -342,7 +342,7 @@ task :update_stocks_S => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_T => :environment do
@@ -360,7 +360,7 @@ task :update_stocks_T => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_U => :environment do
@@ -378,7 +378,7 @@ task :update_stocks_U => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_V => :environment do
@@ -396,7 +396,7 @@ task :update_stocks_V => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_W => :environment do
@@ -414,7 +414,7 @@ task :update_stocks_W => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_X => :environment do
@@ -432,7 +432,7 @@ task :update_stocks_X => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_Y => :environment do
@@ -450,7 +450,7 @@ task :update_stocks_Y => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
 task :update_stocks_Z => :environment do
@@ -468,6 +468,6 @@ task :update_stocks_Z => :environment do
         new_stock = Stock.new(name: ticker.downcase)
         new_stock.update
     end
-    puts "end update_stocks"
+    puts "end update_stocks_#{letter}"
 end
 
