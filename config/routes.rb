@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   root 'stocks#index'
   resources :stocks
   get 'stocks/letter/:letter' => 'stocks#letter', as: :letter
+  get 'stocks/limit/pennyStocks' => 'stocks#pennyStocks', as: :pennyStocks
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

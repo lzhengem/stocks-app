@@ -52,5 +52,11 @@ class StocksController < ApplicationController
     def letter
         @stocks =  Stock.where("name like '#{params[:letter]}%'").order(:name).paginate(page: params[:page], per_page: 50) #sort by how many passes they have
     end
+    def show
+    end
+    
+    def pennyStocks
+         @stocks =  Stock.where("price <= 1").order("pass_count DESC, price ASC").paginate(page: params[:page], per_page: 50)
+    end
         
 end
